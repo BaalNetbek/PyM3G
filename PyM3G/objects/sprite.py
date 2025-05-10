@@ -32,7 +32,7 @@ class Sprite(Node):
                 ("Crop Width", self.crop_width),
                 ("Crop Height", self.crop_height),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

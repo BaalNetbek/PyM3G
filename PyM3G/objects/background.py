@@ -38,7 +38,7 @@ class Background(Object3D):
                 ("Depth Clear Enabled", self.depth_clear_enabled),
                 ("Color Clear Enabled", self.color_clear_enabled),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

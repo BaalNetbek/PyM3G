@@ -33,7 +33,7 @@ class Texture2D(Transformable):
                 ("Level Filter", const2str(self.level_filter)),
                 ("Image Filter", const2str(self.image_filter)),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

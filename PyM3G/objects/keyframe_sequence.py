@@ -42,7 +42,7 @@ class KeyframeSequence(Object3D):
                 ("Vector Bias", f"Array of {len(self.vector_bias)} items"),
                 ("Vector Scale", f"Array of {len(self.vector_scale)} items"),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

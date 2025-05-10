@@ -25,7 +25,7 @@ class AnimationTrack(Object3D):
                 ("Animation Controller", self.animation_controller),
                 ("Property ID", const2str(self.property_id)),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

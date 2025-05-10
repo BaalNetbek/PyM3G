@@ -30,7 +30,7 @@ class Image2D(Object3D):
                 ("Palette", f"Array of {len(self.palette)} items"),
                 ("Pixels", f"Array of {len(self.pixels)} items"),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

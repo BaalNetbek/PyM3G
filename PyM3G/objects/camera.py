@@ -31,7 +31,7 @@ class Camera(Node):
                 ("Near", self.near),
                 ("Far", self.far),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

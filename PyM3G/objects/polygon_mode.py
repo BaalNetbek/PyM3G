@@ -30,7 +30,7 @@ class PolygonMode(Object3D):
                 ("Local Camera Lighting Enabled", self.local_camera_lighting_enabled),
                 ("Perspective Correction Enabled", self.perspective_correction_enabled),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

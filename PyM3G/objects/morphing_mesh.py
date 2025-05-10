@@ -24,7 +24,7 @@ class MorphingMesh(Mesh):
                 ("Morph Target", f"Array of {len(self.morph_target)} items"),
                 ("Initial Weight", f"Array of {len(self.initial_weight)} items"),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

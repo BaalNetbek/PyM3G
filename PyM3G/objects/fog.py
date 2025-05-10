@@ -28,8 +28,7 @@ class Fog(Object3D):
                 ("Near", self.near),
                 ("Far", self.far),
             ],
-        )
-
+        ) + super().inherited_str()
     def read(self, reader):
         super().read(reader)
         self.color = unpack("<3f", reader.read(12))

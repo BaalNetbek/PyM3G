@@ -2,7 +2,7 @@
 
 from struct import unpack
 from PyM3G.objects.transformable import Transformable
-
+from PyM3G.util import obj2str
 
 class Node(Transformable):
     """
@@ -20,6 +20,35 @@ class Node(Transformable):
         self.y_target = None
         self.z_reference = None
         self.y_reference = None
+
+    def __str__(self):
+        return obj2str(
+            "Node",
+            [
+                ("Enable Rendering", self.has_component_transform),
+                ("Enable Picking", self.enable_picking),
+                ("Alpha Factor", self.alpha_factor),
+                ("Scope", hex(self.scope)),
+                ("Has Alignment", self.has_alignment),
+                ("Z Target", self.z_target),
+                ("Y Target", self.y_target),
+                ("Z Reference", self.z_reference),
+                ("Y Reference", self.y_reference),
+            ],
+        ) + super().inherited_str()
+    
+    def inherited_str(self):
+        if (self.enable_rendering != True
+            or self.enable_picking != True
+            or self.alpha_factor != 1.0
+            or self.scope != -1
+            or self.has_alignment != None
+            or self.z_target != None
+            or self.y_target != None
+            or self.z_reference != None
+            or self.y_reference != None):
+                return "From: " + Node.__str__(self)
+        return "From: Node:\n\tdefault values"
 
     def read(self, reader):
         super().read(reader)

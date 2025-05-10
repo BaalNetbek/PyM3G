@@ -2,6 +2,7 @@
 
 from struct import unpack
 from PyM3G.objects.object3d import Object3D
+from PyM3G.util import obj2str
 
 
 class Transformable(Object3D):
@@ -20,6 +21,32 @@ class Transformable(Object3D):
         self.has_general_transform = None
         self.transform = None
 
+    def __str__(self):
+        return obj2str(
+            "Transformable",
+            [
+                #("Has Component Transform", self.has_component_transform),
+                ("Translation", self.translation),
+                ("Scale", self.scale),
+                ("Orientation Angle", self.orientation_angle),
+                ("Orientation Axis", self.orientation_axis),
+                #("Has General Transform", self.has_general_transform),
+                ("Transform", self.transform),
+            ],
+        ) + super().inherited_str()
+    
+    def inherited_str(self):
+        if (self.has_component_transform != None
+            or self.translation != (0, 0, 0)
+            or self.scale != (1, 1, 1)
+            or self.orientation_angle != 0
+            or self.orientation_axis != None
+            or self.has_general_transform != None
+            or self.transform != None):
+                return "From: " + Transformable.__str__(self)
+        return "From: Transformable: default values"
+    
+        return ""
     def read(self, reader):
         super().read(reader)
         self.has_component_transform = unpack("<?", reader.read(1))[0]

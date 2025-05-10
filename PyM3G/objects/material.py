@@ -30,7 +30,7 @@ class Material(Object3D):
                 ("Shininess", self.shininess),
                 ("Vertex Color Tracking Enabled", self.vertex_color_tracking_enabled),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

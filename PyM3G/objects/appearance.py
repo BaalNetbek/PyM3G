@@ -31,7 +31,7 @@ class Appearance(Object3D):
                 ("Material", self.material),
                 ("Textures", self.textures),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

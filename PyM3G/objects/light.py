@@ -34,7 +34,7 @@ class Light(Node):
                 ("Spot Angle", self.spot_angle),
                 ("Spot Exponent", self.spot_exponent),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

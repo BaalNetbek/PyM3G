@@ -34,7 +34,7 @@ class CompositingMode(Object3D):
                 ("Depth Offset Factor", self.depth_offset_factor),
                 ("Depth Offset Units", self.depth_offset_units),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

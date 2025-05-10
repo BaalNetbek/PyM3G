@@ -29,7 +29,7 @@ class VertexArray(Object3D):
                 ("Vertex Count", self.vertex_count),
                 ("Vertices", f"Array of {len(self.vertices)} items"),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

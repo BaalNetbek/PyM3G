@@ -1,7 +1,7 @@
 """Object3D Class"""
 
 from struct import unpack, pack
-
+from PyM3G.util import obj2str
 
 class Object3D:
     """
@@ -12,6 +12,23 @@ class Object3D:
         self.user_id = 0
         self.animation_tracks = []
         self.user_parameters = {}
+
+    def __str__(self):
+        return obj2str(
+            "Object3D",
+            [
+                ("User ID", self.user_id),
+                ("Animation Tracks", self.animation_tracks),
+                ("User Parameters", self.user_parameters),
+            ],
+        )
+    
+    def inherited_str(self):
+        if (self.user_id != 0
+            or self.animation_tracks != []
+            or self.user_parameters != {}):
+            return "From: " + Object3D.__str__(self)
+        return "From: Object3D: default values"
 
     def read(self, reader):
         """Read object data from an input stream"""

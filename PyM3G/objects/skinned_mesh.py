@@ -30,7 +30,7 @@ class SkinnedMesh(Mesh):
                 ("Vertex Count", f"Array of {len(self.vertex_count)} items"),
                 ("Weight", f"Array of {len(self.weight)} items"),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

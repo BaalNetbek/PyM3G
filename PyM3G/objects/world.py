@@ -19,8 +19,7 @@ class World(Group):
         return obj2str(
             "World",
             [("Active Camera", self.active_camera), ("Background", self.background)],
-        )
-
+        ) + super().inherited_str()
     def read(self, reader):
         super().read(reader)
         self.active_camera, self.background = unpack("<II", reader.read(8))

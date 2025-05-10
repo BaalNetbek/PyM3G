@@ -30,7 +30,7 @@ class AnimationController(Object3D):
                 ("Reference Sequence Time", self.reference_sequence_time),
                 ("Reference World Time", self.reference_world_time),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

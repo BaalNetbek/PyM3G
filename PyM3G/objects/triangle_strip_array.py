@@ -26,7 +26,7 @@ class TriangleStripArray(Object3D):
                 ("Indices", f"Array of {len(self.indices)} items"),
                 ("Strip Lengths", f"Array of {len(self.strip_lengths)} items"),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)

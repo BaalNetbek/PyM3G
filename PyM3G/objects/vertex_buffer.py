@@ -13,7 +13,7 @@ class VertexBuffer(Object3D):
 
     def __init__(self):
         super().__init__()
-        self.default_color = (1.0, 1.0, 1.0, 1.0)
+        self.default_color = (0xff, 0xff, 0xff, 0xff)
         self.positions = None
         self.position_bias = None
         self.position_scale = None
@@ -39,7 +39,7 @@ class VertexBuffer(Object3D):
                 ("Texcoord Bias", f"Array of {len(self.tex_coord_bias)} items"),
                 ("Texcoord Scale", f"Array of {len(self.tex_coord_scale)} items"),
             ],
-        )
+        ) + super().inherited_str()
 
     def read(self, reader):
         super().read(reader)
@@ -57,3 +57,23 @@ class VertexBuffer(Object3D):
                 self.tex_coords.append(unpack("<I", reader.read(4))[0])
                 self.tex_coord_bias.append(unpack("<3f", reader.read(12)))
                 self.tex_coord_scale.append(unpack("<f", reader.read(4))[0])
+
+    def get_colors(self):
+        """
+        Gets the current color array, or null if per-vertex colors are not set.
+        """
+        if self.colors == 0:
+            return None
+        return self.colors
+    
+    def get_default_color(self):
+        """
+        Retrieves the default color of this VertexBuffer.
+        """
+        return self.default_color
+    
+    def get_normals(self):
+        """
+        Gets the current normal vector array, or null if normals are not set.
+        """
+        

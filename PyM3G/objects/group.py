@@ -15,7 +15,12 @@ class Group(Node):
         self.children = []
 
     def __str__(self):
-        return obj2str("Group", [("Children", self.children)])
+        return obj2str("Group", [("Children", self.children)]) + super().inherited_str()
+    
+    def inherited_str(self):
+        if self.children != []:
+            return "From: " + Group.__str__(self)
+        return "From: Group:\n\tdefault values"
 
     def read(self, reader):
         super().read(reader)
