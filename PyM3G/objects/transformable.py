@@ -64,10 +64,8 @@ class Transformable(Object3D):
     def write(self, writer):
         super().write(writer)
         writer.write(pack("<?", self.has_component_transform))
-        if (self.has_component_transform 
-            and self.translation 
-            and self.scale 
-            and self.orientation_axis):
+        if (self.has_component_transform and self.translation is not None 
+            and self.scale is not None and self.orientation_axis is not None):
             writer.write(pack("<3f", *self.translation))
             writer.write(pack("<3f", *self.scale))
             writer.write(pack("<f", self.orientation_angle))

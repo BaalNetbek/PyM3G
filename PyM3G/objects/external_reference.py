@@ -17,3 +17,7 @@ class ExternalReference:
     def read(self, reader):
         """Read external reference string from file stream"""
         self.uri = reader.read().rstrip(b"\x00").decode("utf-8")
+
+    def write(self, writer):
+        pass
+        # TODO

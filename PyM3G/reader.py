@@ -187,7 +187,7 @@ class M3GReader:
             else:
                 self.log.error("Unknown Compression Scheme.")
                 return            
-            chksum1 = zlib.adler32(pack("<BII", compression, total_len, uncomp) + data)
+            chksum1 = zlib.adler32(section_header + data)
             chksum2 = unpack("<I", self.file.read(4))[0]
             if chksum1 != chksum2:
                 self.log.error(

@@ -44,7 +44,11 @@ class Object3D:
 
     def write(self, writer):
         """Write object data to an output stream"""
-        writer.write(pack("<II", self.user_id, len(self.animation_tracks)))
+        writer.write(pack(
+            "<II",
+            self.user_id, 
+            len(self.animation_tracks)
+            ))
         if len(self.animation_tracks) > 0:
             for track in self.animation_tracks:
                 writer.write(pack("<I", track))

@@ -97,7 +97,7 @@ class KeyframeSequence(Object3D):
                 )
     def write(self, writer):
         super().write(writer)
-        pack("<3B5I",
+        writer.write(pack("<3B5I",
             self.interpolation,
             self.repeat_mode,
             self.encoding,
@@ -106,7 +106,7 @@ class KeyframeSequence(Object3D):
             self.valid_range_last,
             self.component_count,
             self.keyframe_count,
-        )
+        ))
         if self.encoding == 0:
             for i in range(self.keyframe_count):
                 writer.write(pack("<I", self.time[i]))

@@ -69,13 +69,13 @@ class Node(Transformable):
             )
         self.alpha_factor = self.alpha_factor / 255.0
 
-    def wrote(self, writer):
+    def write(self, writer):
         super().write(writer)
         writer.write(pack(
                 "<??BI?",
                 self.enable_rendering,
                 self.enable_picking,
-                self.alpha_factor * 255.0,
+                int(self.alpha_factor * 255 + 0.5),
                 self.scope,
                 self.has_alignment,    
                 ))

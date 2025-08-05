@@ -8,7 +8,7 @@ from PyM3G.reader import M3GReader
 
 c = console.Console()
 
-m3g = M3GReader(argv[1], "WARNING")
+m3g = M3GReader(argv[1], "DEBUG")
 idx = 0
 for obj in m3g.objects:
     c.print(f"({idx}) {obj}")

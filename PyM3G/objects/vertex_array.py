@@ -91,13 +91,10 @@ class VertexArray(Object3D):
             ))
         if self.component_size == 1:
             c_t = "b"
-            c_s = 1
         elif self.component_size == 2:
             c_t = "h"
-            c_s = 2
         elif self.component_size == 4:
             c_t = "f"
-            c_s = 4
         # else:
         # log.error("Error writing vertex array")
         if self.encoding == 0:

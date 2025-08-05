@@ -1,6 +1,6 @@
 """Appearance Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.object3d import Object3D
 
@@ -46,3 +46,19 @@ class Appearance(Object3D):
         ) = unpack("<B5I", reader.read(21))
         for _ in range(texcount):
             self.textures.append(unpack("<I", reader.read(4))[0])
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(
+            pack(
+                "<B5I",
+                self.layer,
+                self.compositing_mode,
+                self.fog,
+                self.polygon_mode,
+                self.material,
+                len(self.textures),
+            )
+        )
+        for tex in self.textures:
+            writer.write(pack("<I", tex))
