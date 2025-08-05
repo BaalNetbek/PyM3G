@@ -1,6 +1,6 @@
 """Header Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 
 
@@ -37,3 +37,13 @@ class Header:
             self.approximate_content_size,
         ) = unpack("<?II", reader.read(9))
         self.authoring_field = reader.read().rstrip(b"\x00").decode("utf-8")
+
+    
+    def write(self, writer):
+        """
+        If file structure was changed sizes has to be updated manually!
+        Write header to file stream.
+        """
+        writer.write(pack("<BB", *self.version))
+        writer.write(pack("<?II", self.has_external_references, self.total_file_size, self.approximate_content_size))
+        writer.write(self.authoring_field.encode("utf-8") + b"\x00")

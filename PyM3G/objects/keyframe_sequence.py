@@ -1,6 +1,6 @@
 """Keyframe Sequence Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.object3d import Object3D
 
@@ -93,5 +93,50 @@ class KeyframeSequence(Object3D):
                     unpack(
                         f"<{self.component_count}H",
                         reader.read(2 * self.component_count),
+                    )
+                )
+    def write(self, writer):
+        super().write(writer)
+        pack("<3B5I",
+            self.interpolation,
+            self.repeat_mode,
+            self.encoding,
+            self.duration,
+            self.valid_range_first,
+            self.valid_range_last,
+            self.component_count,
+            self.keyframe_count,
+        )
+        if self.encoding == 0:
+            for i in range(self.keyframe_count):
+                writer.write(pack("<I", self.time[i]))
+                writer.write(
+                    pack(
+                        "<%df"%self.component_count,
+                        *self.vector_value[i],
+                    )
+                )
+        elif self.encoding == 1:
+            writer.write(pack("<%df"%self.component_count, *self.vector_bias))
+            writer.write(pack("<%df"%self.component_count, *self.vector_scale))
+
+            for i in range(self.keyframe_count):
+                writer.write(pack("<I", self.time[i]))
+                writer.write(
+                    pack(
+                        "<%dB"%self.component_count,
+                        *self.vector_value[i]
+                    )
+                )
+        elif self.encoding == 2:
+            writer.write(pack("<%df"%self.component_count, *self.vector_bias))
+            writer.write(pack("<%df"%self.component_count, *self.vector_scale))
+
+            for i in range(self.keyframe_count):
+                writer.write(pack("<I", self.time[i]))
+                writer.write(
+                    pack(
+                        "<%dH"%self.component_count,
+                        *self.vector_value[i]
                     )
                 )

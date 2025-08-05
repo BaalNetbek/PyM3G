@@ -1,6 +1,6 @@
 """Animation Track Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.object3d import Object3D
 
@@ -32,3 +32,12 @@ class AnimationTrack(Object3D):
         (self.keyframe_sequence, self.animation_controller, self.property_id) = unpack(
             "<3I", reader.read(12)
         )
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack(
+            "<3I", 
+            self.keyframe_sequence, 
+            self.animation_controller, 
+            self.property_id
+            ))

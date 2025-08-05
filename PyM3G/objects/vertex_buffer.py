@@ -1,6 +1,6 @@
 """Vertex Buffer Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.object3d import Object3D
 
@@ -57,6 +57,24 @@ class VertexBuffer(Object3D):
                 self.tex_coords.append(unpack("<I", reader.read(4))[0])
                 self.tex_coord_bias.append(unpack("<3f", reader.read(12)))
                 self.tex_coord_scale.append(unpack("<f", reader.read(4))[0])
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack("<4B", *self.default_color))
+        writer.write(pack("<I", self.positions))
+        writer.write(pack("<3f", *self.position_bias))
+        writer.write(pack(
+            "<f3I",
+            self.position_scale, 
+            self.normals, 
+            self.colors, 
+            self.texcoord_array_count
+            ))
+        if self.texcoord_array_count > 0:
+            for i in range(self.texcoord_array_count):
+                writer.write(pack("<I", self.tex_coords[i]))
+                writer.write(pack("<3f", *self.tex_coord_bias[i]))
+                writer.write(pack("<f", self.tex_coord_scale[i]))
 
     def get_colors(self):
         """

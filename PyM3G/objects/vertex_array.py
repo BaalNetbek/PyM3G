@@ -1,6 +1,6 @@
 """Vertex Array Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.object3d import Object3D
 
@@ -79,3 +79,44 @@ class VertexArray(Object3D):
                     )
                 self.vertices.append(tvtx)
                 delta = tvtx
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack(
+            "<3BH", 
+            self.component_size, 
+            self.component_count, 
+            self.encoding, 
+            self.vertex_count
+            ))
+        if self.component_size == 1:
+            c_t = "b"
+            c_s = 1
+        elif self.component_size == 2:
+            c_t = "h"
+            c_s = 2
+        elif self.component_size == 4:
+            c_t = "f"
+            c_s = 4
+        # else:
+        # log.error("Error writing vertex array")
+        if self.encoding == 0:
+            for vtx in self.vertices:
+                writer.write(pack(
+                    "<" + str(self.component_count) + c_t,
+                    *vtx
+                ))
+        elif self.encoding == 1:
+            def sub(a:list, b:list):
+                return tuple(x - y for x, y in zip(a, b))
+            
+            for i in len(self.vertices):
+                if i == 0:
+                    vtx = self.vertices[i]
+                else:
+                    vtx = sub(self.vertices[i], self.vertices[i-1])
+                writer.write(pack(
+                    "<" + str(self.component_count) + c_t,
+                    *vtx
+                ))
+           

@@ -1,6 +1,6 @@
 """Polygon Mode Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.object3d import Object3D
 
@@ -21,7 +21,7 @@ class PolygonMode(Object3D):
 
     def __str__(self):
         return obj2str(
-            "Material",
+            "PolygonMode",
             [
                 ("Culling", const2str(self.culling)),
                 ("Shading", const2str(self.shading)),
@@ -42,3 +42,17 @@ class PolygonMode(Object3D):
             self.local_camera_lighting_enabled,
             self.perspective_correction_enabled,
         ) = unpack("<3B3?", reader.read(6))
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(
+            pack(
+                "<3B3?",
+                self.culling,
+                self.shading,
+                self.winding,
+                self.two_sided_lighting_enabled,
+                self.local_camera_lighting_enabled,
+                self.perspective_correction_enabled,
+            )
+        )

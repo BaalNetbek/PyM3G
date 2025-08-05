@@ -1,6 +1,6 @@
 """Texture2D Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.transformable import Transformable
 
@@ -46,3 +46,16 @@ class Texture2D(Transformable):
             self.level_filter,
             self.image_filter,
         ) = unpack("<5B", reader.read(5))
+    
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack("<I", self.image))
+        writer.write(pack("<3B", *self.blend_color))
+        writer.write(pack(
+            "<5B",
+            self.blending,
+            self.wrapping_s,
+            self.wrapping_t,
+            self.level_filter,
+            self.image_filter
+        ))

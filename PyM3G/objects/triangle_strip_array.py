@@ -1,6 +1,6 @@
 """Triangle Strip Array Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.object3d import Object3D
 
@@ -53,3 +53,28 @@ class TriangleStripArray(Object3D):
         scount = unpack("<I", reader.read(4))[0]
         for _ in range(scount):
             self.strip_lengths.append(unpack("<I", reader.read(4))[0])
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack("<B", self.encoding))
+        if self.encoding == 0:
+            writer.write(pack("<I", self.start_index))
+        elif self.encoding == 1:
+            writer.write(pack("<B", self.start_index))
+        elif self.encoding == 2:
+            writer.write(pack("<H", self.start_index))
+        elif self.encoding == 128:
+            writer.write(pack("<I", len(self.indices)))
+            for index in self.indices:
+                writer.write(pack("<I", index))
+        elif self.encoding == 129:
+            writer.write(pack("<I", len(self.indices)))
+            for index in self.indices:
+                writer.write(pack("<B", index))
+        elif self.encoding == 130:
+            writer.write(pack("<I", len(self.indices)))
+            for index in self.indices:
+                writer.write(pack("<H", index))
+        writer.write(pack("<I", len(self.strip_lengths)))
+        for length in self.strip_lengths:
+            writer.write(pack("<I", length))

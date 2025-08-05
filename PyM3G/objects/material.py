@@ -1,6 +1,6 @@
 """Material Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.object3d import Object3D
 
@@ -41,3 +41,11 @@ class Material(Object3D):
         (self.shininess, self.vertex_color_tracking_enabled) = unpack(
             "<f?", reader.read(5)
         )
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack("<3B", *self.ambient_color))
+        writer.write(pack("<4B", *self.diffuse_color))
+        writer.write(pack("<3B", *self.emissive_color))
+        writer.write(pack("<3B", *self.specular_color))
+        writer.write(pack("<f?", self.shininess, self.vertex_color_tracking_enabled))

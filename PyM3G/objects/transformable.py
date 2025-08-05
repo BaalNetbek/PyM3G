@@ -1,8 +1,9 @@
 """Transformable Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.objects.object3d import Object3D
 from PyM3G.util import obj2str
+from PyM3G.data.matrix import Matrix
 
 
 class Transformable(Object3D):
@@ -19,10 +20,7 @@ class Transformable(Object3D):
         self.orientation_angle = 0
         self.orientation_axis = None
         self.has_general_transform = None
-        self.matrix = (1.0, 0, 0, 0,
-                       0, 1.0, 0, 0,
-                       0, 0, 1.0, 0,
-                       0, 0, 0, 1.0)
+        self.matrix = Matrix.identity()
 
     def __str__(self):
         return obj2str(
@@ -45,7 +43,7 @@ class Transformable(Object3D):
             or self.orientation_angle != 0
             or self.orientation_axis != None
             or self.has_general_transform != None
-            or self.matrix != (1.0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 1.0)
+            or self.matrix != Matrix.identity()
             ):
                 return "From: " + Transformable.__str__(self)
         return "From: Transformable: default values"
@@ -61,4 +59,19 @@ class Transformable(Object3D):
             self.orientation_axis = unpack("<3f", reader.read(12))
         self.has_general_transform = unpack("<?", reader.read(1))[0]
         if self.has_general_transform:
-            self.matrix = unpack("<16f", reader.read(64))
+            self.matrix = Matrix(unpack("<16f", reader.read(64)))
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack("<?", self.has_component_transform))
+        if (self.has_component_transform 
+            and self.translation 
+            and self.scale 
+            and self.orientation_axis):
+            writer.write(pack("<3f", *self.translation))
+            writer.write(pack("<3f", *self.scale))
+            writer.write(pack("<f", self.orientation_angle))
+            writer.write(pack("<3f", *self.orientation_axis))
+        writer.write(pack("<?", self.has_general_transform))
+        if self.has_general_transform and self.matrix:
+            writer.write(pack("<16f", *self.matrix.elements))

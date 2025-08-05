@@ -1,6 +1,6 @@
 """Image2D Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.object3d import Object3D
 
@@ -44,3 +44,14 @@ class Image2D(Object3D):
             pxl = unpack("<I", reader.read(4))[0]
             for _ in range(pxl):
                 self.pixels.append(unpack("<B", reader.read(1))[0])
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack("<B?II", self.image_format, self.is_mutable, self.width, self.height))
+        if not self.is_mutable:
+            writer.write(pack("<I", len(self.palette)))
+            for color in self.palette:
+                writer.write(pack("<B", color))
+            writer.write(pack("<I", len(self.pixels)))
+            for pixel in self.pixels:
+                writer.write(pack("<B", pixel))

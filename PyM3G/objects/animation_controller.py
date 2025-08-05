@@ -1,6 +1,6 @@
 """Animation Controller Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.object3d import Object3D
 
@@ -42,3 +42,17 @@ class AnimationController(Object3D):
             self.reference_sequence_time,
             self.reference_world_time,
         ) = unpack("<ffIIfI", reader.read(24))
+    
+    def write(self, writer):
+        super().write(writer)
+        writer.write(
+            pack(
+                "<ffIIfI",
+                self.speed,
+                self.weight,
+                self.active_interval_start,
+                self.active_interval_end,
+                self.reference_sequence_time,
+                self.reference_world_time,
+            )
+        )

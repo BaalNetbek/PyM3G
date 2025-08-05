@@ -1,6 +1,6 @@
 """Group Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.node import Node
 
@@ -27,3 +27,9 @@ class Group(Node):
         count = unpack("<I", reader.read(4))[0]
         for _ in range(count):
             self.children.append(unpack("<I", reader.read(4))[0])
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(pack("<I", len(self.children)))
+        for child in self.children:
+            writer.write(pack("<I", child))

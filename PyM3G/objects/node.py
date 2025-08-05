@@ -1,6 +1,6 @@
 """Node Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.objects.transformable import Transformable
 from PyM3G.util import obj2str
 
@@ -60,7 +60,30 @@ class Node(Transformable):
             self.has_alignment,
         ) = unpack("<??BI?", reader.read(8))
         if self.has_alignment:
-            (self.z_target, self.y_target, self.z_reference, self.y_reference) = unpack(
-                "<BBII", reader.read(10)
+            (
+                self.z_target,
+                self.y_target, 
+                self.z_reference, 
+                self.y_reference
+                ) = unpack("<BBII", reader.read(10)
             )
         self.alpha_factor = self.alpha_factor / 255.0
+
+    def wrote(self, writer):
+        super().write(writer)
+        writer.write(pack(
+                "<??BI?",
+                self.enable_rendering,
+                self.enable_picking,
+                self.alpha_factor * 255.0,
+                self.scope,
+                self.has_alignment,    
+                ))
+        if self.has_alignment:
+            writer.write(pack(
+                "<BBII",
+                self.z_target, 
+                self.y_target, 
+                self.z_reference, 
+                self.y_reference
+                ))
