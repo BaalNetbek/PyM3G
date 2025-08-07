@@ -96,9 +96,9 @@ class M3GStatus(Enum):
 
 def obj2str(obtype, values):
     """Build a string representation of an object"""
-    outstr = f"{obtype}:\n"
+    outstr = obtype+":\n"
     for item in values:
-        outstr += f"\t{item[0]}: {item[1]}\n"
+        outstr += "\t"+str(item[0])+": "+str(item[1])+"\n"
     return outstr
 
 

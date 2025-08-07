@@ -19,5 +19,4 @@ class ExternalReference:
         self.uri = reader.read().rstrip(b"\x00").decode("utf-8")
 
     def write(self, writer):
-        pass
-        # TODO
+        writer.write(self.uri.encode("utf-8") + b"\x00")

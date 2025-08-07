@@ -29,18 +29,18 @@ class KeyframeSequence(Object3D):
         return obj2str(
             "KeyframeSequence",
             [
-                ("Interpolation", const2str(self.interpolation)),
-                ("Repeat Mode", const2str(self.repeat_mode)),
+                ("Interpolation", const2str(self.interpolation) + " (%d)" % self.interpolation),
+                ("Repeat Mode", const2str(self.repeat_mode) + " (%d)" % self.repeat_mode),
                 ("Encoding", self.encoding),
                 ("Duration", self.duration),
                 ("Valid Range First", self.valid_range_first),
                 ("Valid Range Last", self.valid_range_last),
                 ("Component Count", self.component_count),
                 ("Keyframe Count", self.keyframe_count),
-                ("Time", f"Array of {len(self.time)} items"),
-                ("Vector Value", f"Array of {len(self.vector_value)} items"),
-                ("Vector Bias", f"Array of {len(self.vector_bias)} items"),
-                ("Vector Scale", f"Array of {len(self.vector_scale)} items"),
+                ("Time", "Array of %d items"%len(self.time)),
+                ("Vector Value", "Array of %d items"%len(self.vector_value)),
+                ("Vector Bias", "Array of %d items"%len(self.vector_bias)),
+                ("Vector Scale", "Array of %d items"%len(self.vector_scale)),
             ],
         ) + super().inherited_str()
 
@@ -61,37 +61,37 @@ class KeyframeSequence(Object3D):
                 self.time.append(unpack("<I", reader.read(4))[0])
                 self.vector_value.append(
                     unpack(
-                        f"<{self.component_count}f",
+                        "<%df"%self.component_count,
                         reader.read(4 * self.component_count),
                     )
                 )
         elif self.encoding == 1:
             self.vector_bias = unpack(
-                f"<{self.component_count}f", reader.read(4 * self.component_count)
+                "<%df"%self.component_count, reader.read(4 * self.component_count)
             )
             self.vector_scale = unpack(
-                f"<{self.component_count}f", reader.read(4 * self.component_count)
+                "<%df"%self.component_count, reader.read(4 * self.component_count)
             )
             for _ in range(self.keyframe_count):
                 self.time.append(unpack("<I", reader.read(4))[0])
                 self.vector_value.append(
                     unpack(
-                        f"<{self.component_count}B",
+                        "<%dB"%self.component_count,
                         reader.read(self.component_count),
                     )
                 )
         elif self.encoding == 2:
             self.vector_bias = unpack(
-                f"<{self.component_count}f", reader.read(4 * self.component_count)
+                "<%df"%self.component_count, reader.read(4 * self.component_count)
             )
             self.vector_scale = unpack(
-                f"<{self.component_count}f", reader.read(4 * self.component_count)
+                "<%df"%self.component_count, reader.read(4 * self.component_count)
             )
             for _ in range(self.keyframe_count):
                 self.time.append(unpack("<I",reader.read(4))[0])
                 self.vector_value.append(
                     unpack(
-                        f"<{self.component_count}H",
+                        "<%dH"%self.component_count,
                         reader.read(2 * self.component_count),
                     )
                 )

@@ -3,8 +3,8 @@
 from struct import unpack, pack
 from PyM3G.util import obj2str
 from PyM3G.objects.node import Node
-from PyM3G.objects.vertex_buffer import VertexBuffer
-from PyM3G.objects.appearance import Appearance  
+# from PyM3G.objects.vertex_buffer import VertexBuffer
+# from PyM3G.objects.appearance import Appearance  
 
 class Mesh(Node):
     """
