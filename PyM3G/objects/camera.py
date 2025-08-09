@@ -24,7 +24,7 @@ class Camera(Node):
         return obj2str(
             "Camera",
             [
-                ("Projection Type", const2str(self.projection_type)),
+                ("Projection Type", const2str(self.projection_type) + " (%d)" % self.projection_type),
                 ("Projection Matrix", self.projection_matrix),
                 ("Fov Y", self.fovy),
                 ("Aspect Ratio", self.aspect_ratio),

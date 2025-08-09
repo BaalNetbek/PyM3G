@@ -20,11 +20,11 @@ class Header:
         return obj2str(
             "Header",
             [
-                ("Version", f"{self.version[0]}.{self.version[1]}"),
+                ("Version", "%d.%d" % (self.version[0], self.version[1])),
                 ("Has external references", self.has_external_references),
                 ("Total file size", self.total_file_size),
                 ("Approximate content size", self.approximate_content_size),
-                ("Authoring field text", f"'{self.authoring_field}'"),
+                ("Authoring field text", "'%s'" % self.authoring_field),
             ],
         )
 

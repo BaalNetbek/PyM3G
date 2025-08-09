@@ -27,7 +27,7 @@ class VertexArray(Object3D):
                 ("Component Count", self.component_count),
                 ("Encoding", self.encoding),
                 ("Vertex Count", self.vertex_count),
-                ("Vertices", f"Array of {len(self.vertices)} items"),
+                ("Vertices", "Array of %d items"%len(self.vertices)),
             ],
         ) + super().inherited_str()
 

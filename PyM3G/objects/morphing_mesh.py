@@ -21,8 +21,8 @@ class MorphingMesh(Mesh):
             "MorphingMesh",
             [
                 ("Morph Target Count", self.morph_target_count),
-                ("Morph Target", f"Array of {len(self.morph_target)} items"),
-                ("Initial Weight", f"Array of {len(self.initial_weight)} items"),
+                ("Morph Target", "Array of {0} items".format(len(self.morph_target))),
+                ("Initial Weight", "Array of {0} items".format(len(self.initial_weight))),
             ],
         ) + super().inherited_str()
 

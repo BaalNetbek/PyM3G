@@ -35,9 +35,9 @@ class VertexBuffer(Object3D):
                 ("Normals", self.normals),
                 ("Colors", self.colors),
                 ("Texcoord Array Count", self.texcoord_array_count),
-                ("Texcoords", f"Array of {len(self.tex_coords)} items"),
-                ("Texcoord Bias", f"Array of {len(self.tex_coord_bias)} items"),
-                ("Texcoord Scale", f"Array of {len(self.tex_coord_scale)} items"),
+                ("Texcoords", self.tex_coords),
+                ("Texcoord Bias", self.tex_coord_bias),
+                ("Texcoord Scale", "{} (resolution {})".format(self.tex_coord_scale, [1/s for s in self.tex_coord_scale])),
             ],
         ) + super().inherited_str()
 

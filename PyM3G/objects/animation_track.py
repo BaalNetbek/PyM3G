@@ -23,7 +23,7 @@ class AnimationTrack(Object3D):
             [
                 ("Keyframe Sequence", self.keyframe_sequence),
                 ("Animation Controller", self.animation_controller),
-                ("Property ID", const2str(self.property_id)),
+                ("Property ID", const2str(self.property_id) + " (%d)" % self.property_id),
             ],
         ) + super().inherited_str()
 

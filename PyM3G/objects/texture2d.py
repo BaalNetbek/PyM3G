@@ -27,11 +27,11 @@ class Texture2D(Transformable):
             [
                 ("Image", self.image),
                 ("Blend Color", self.blend_color),
-                ("Blending", const2str(self.blending)),
-                ("Wrapping S", const2str(self.wrapping_s)),
-                ("Wrapping T", const2str(self.wrapping_t)),
-                ("Level Filter", const2str(self.level_filter)),
-                ("Image Filter", const2str(self.image_filter)),
+                ("Blending", const2str(self.blending) + " (%d)" % self.blending),
+                ("Wrapping S", const2str(self.wrapping_s) + " (%d)" % self.wrapping_s),
+                ("Wrapping T", const2str(self.wrapping_t) + " (%d)" % self.wrapping_t),
+                ("Level Filter", const2str(self.level_filter) + " (%d)" % self.level_filter),
+                ("Image Filter", const2str(self.image_filter) + " (%d)" % self.image_filter),
             ],
         ) + super().inherited_str()
 

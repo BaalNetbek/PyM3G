@@ -29,8 +29,8 @@ class Background(Object3D):
             [
                 ("Color", self.background_color),
                 ("Image", self.background_image),
-                ("Image Mode X", const2str(self.background_image_mode_x)),
-                ("Image Mode Y", const2str(self.background_image_mode_y)),
+                ("Image Mode X", const2str(self.background_image_mode_x) + " (%d)" % self.background_image_mode_x),
+                ("Image Mode Y", const2str(self.background_image_mode_y) + " (%d)" % self.background_image_mode_y),
                 ("Crop X", self.crop_x),
                 ("Crop Y", self.crop_y),
                 ("Crop Width", self.crop_width),

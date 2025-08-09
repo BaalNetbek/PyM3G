@@ -23,7 +23,7 @@ class Fog(Object3D):
             "Fog",
             [
                 ("Color", self.color),
-                ("Mode", const2str(self.mode)),
+                ("Mode", const2str(self.mode) + " (%d)" % self.mode),
                 ("Density", self.density),
                 ("Near", self.near),
                 ("Far", self.far),

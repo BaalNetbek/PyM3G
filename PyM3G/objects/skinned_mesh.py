@@ -23,14 +23,14 @@ class SkinnedMesh(Mesh):
         return obj2str(
             "SkinnedMesh",
             [
-                ("Skeleton", self.skeleton),
-                ("Transform Reference Count", self.transform_reference_count),
-                ("Transform Node", f"Array of {len(self.transform_node)} items"),
-                ("First Vertex", f"Array of {len(self.first_vertex)} items"),
-                ("Vertex Count", f"Array of {len(self.vertex_count)} items"),
-                ("Weight", f"Array of {len(self.weight)} items"),
+            ("Skeleton", self.skeleton),
+            ("Transform Reference Count", self.transform_reference_count),
+            ("Transform Node", "Array of {0} items".format(len(self.transform_node))),
+            ("First Vertex", "Array of {0} items".format(len(self.first_vertex))),
+            ("Vertex Count", "Array of {0} items".format(len(self.vertex_count))),
+            ("Weight", "Array of {0} items".format(len(self.weight))),
             ],
-        ) + super().inherited_str()
+        ) + super(SkinnedMesh, self).inherited_str()
 
     def read(self, reader):
         super().read(reader)

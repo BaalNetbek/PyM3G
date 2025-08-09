@@ -11,5 +11,5 @@ c = console.Console()
 m3g = M3GReader(argv[1], "DEBUG")
 idx = 0
 for obj in m3g.objects:
-    c.print(f"({idx}) {obj}")
+    c.print("({0}) {1}".format(idx, obj))
     idx = idx + 1

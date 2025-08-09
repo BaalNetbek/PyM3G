@@ -23,14 +23,13 @@ class Image2D(Object3D):
         return obj2str(
             "Image2D",
             [
-                ("Format", const2str(self.image_format)),
+                ("Format", const2str(self.image_format) + " (%d)" % self.image_format),
                 ("Is Mutable", self.is_mutable),
-                ("Size", f"{self.width} x {self.height}"),
-                ("Height", self.height),
-                ("Palette", f"Array of {len(self.palette)} items"),
-                ("Pixels", f"Array of {len(self.pixels)} items"),
+                ("Size", "{} x {}".format(self.width, self.height)),
+                ("Palette", "Array of {} items".format(len(self.palette))),
+                ("Pixels", "Array of {} items".format(len(self.pixels))),
             ],
-        ) + super().inherited_str()
+        ) + super(Image2D, self).inherited_str()
 
     def read(self, reader):
         super().read(reader)

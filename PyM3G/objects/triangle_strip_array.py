@@ -23,8 +23,8 @@ class TriangleStripArray(Object3D):
             [
                 ("Encoding", self.encoding),
                 ("Start Index", self.start_index),
-                ("Indices", f"Array of {len(self.indices)} items"),
-                ("Strip Lengths", f"Array of {len(self.strip_lengths)} items"),
+                ("Indices", "Array of {0} items".format(len(self.indices))),
+                ("Strip Lengths", "Array of {0} items".format(len(self.strip_lengths))),
             ],
         ) + super().inherited_str()
 

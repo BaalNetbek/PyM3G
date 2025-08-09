@@ -29,7 +29,7 @@ class CompositingMode(Object3D):
                 ("Depth Write Enabled", self.depth_write_enabled),
                 ("Color Write Enabled", self.color_write_enabled),
                 ("Alpha Write Enabled", self.alpha_write_enabled),
-                ("Blending", const2str(self.blending)),
+                ("Blending", const2str(self.blending) + " (%d)" % self.blending),
                 ("Alpha Threshold", self.alpha_threshold),
                 ("Depth Offset Factor", self.depth_offset_factor),
                 ("Depth Offset Units", self.depth_offset_units),

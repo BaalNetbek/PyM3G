@@ -191,7 +191,7 @@ class M3GReader:
             chksum2 = unpack("<I", self.file.read(4))[0]
             if chksum1 != chksum2:
                 self.log.error(
-                    f"Checksums do not match, file '{self.file.name}' may be corrupt"
+                    "Checksums do not match, file '%s' may be corrupt"%self.file.name
                 )
                 return
             self.log.info("Checksum validated successfully")

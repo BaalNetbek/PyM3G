@@ -29,7 +29,7 @@ class Light(Node):
                 ("Attenuation Linear", self.attenuation_linear),
                 ("Attenuation Quadratic", self.attenuation_quadratic),
                 ("Color", self.color),
-                ("Mode", const2str(self.mode)),
+                ("Mode", const2str(self.mode) + " (%d)" % self.mode),
                 ("Intensity", self.intensity),
                 ("Spot Angle", self.spot_angle),
                 ("Spot Exponent", self.spot_exponent),

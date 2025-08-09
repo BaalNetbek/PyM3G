@@ -23,9 +23,9 @@ class PolygonMode(Object3D):
         return obj2str(
             "PolygonMode",
             [
-                ("Culling", const2str(self.culling)),
-                ("Shading", const2str(self.shading)),
-                ("Winding", const2str(self.winding)),
+                ("Culling", const2str(self.culling) + " (%d)" % self.culling),
+                ("Shading", const2str(self.shading) + " (%d)" % self.shading),
+                ("Winding", const2str(self.winding) + " (%d)" % self.winding),
                 ("Two Sided Lighting Enabled", self.two_sided_lighting_enabled),
                 ("Local Camera Lighting Enabled", self.local_camera_lighting_enabled),
                 ("Perspective Correction Enabled", self.perspective_correction_enabled),
