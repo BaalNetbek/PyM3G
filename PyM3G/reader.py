@@ -85,6 +85,8 @@ class M3GReader:
 
         self.status = M3GStatus.FAILED
         self.objects = []
+        self.sections = []
+        self.sect_cnt = 0
         self.file = open(path, "rb")
         if not self.file:
             self.log.error("Could not open file %s", path)
@@ -94,6 +96,7 @@ class M3GReader:
             self.file.close()
             return
         self.read_sections()
+        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections]) + " - " + str(self.sections[self.sect_cnt-1][1]) + " total.")
         self.file.close()
         self.status = M3GStatus.SUCCESS
 
@@ -173,6 +176,7 @@ class M3GReader:
             section_header = self.file.read(9)
             if section_header == b"":
                 break
+            self.sections.append([len(self.objects)])
             self.log.info("Section @ %d", self.file.tell())
             compression, total_len, uncomp = unpack("<BII", section_header)
             self.log.info("Compression: %s", compression)
@@ -195,6 +199,9 @@ class M3GReader:
                 )
                 return
             self.log.info("Checksum validated successfully")
+
+            self.sections[self.sect_cnt].append(len(self.objects))
+            self.sect_cnt+=1
 
     def get_object_by_id(self, obj_id):
         """Returns an object based on id"""

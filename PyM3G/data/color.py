@@ -16,7 +16,7 @@ class Color:
         if self.rgb is None:
             return "Not initialized" 
         return ("R:%d G:%d B:%d "% (self.rgb[0], self.rgb[1], self.rgb[2])  +
-                (("A: %d "%self.a) if self.a is not None else "") +
+                (("A:%d "%self.a) if self.a is not None else "") +
                 # print the color - not supported in old terminals
                 "\033[48;2;{0};{1};{2}m".format(*self.rgb[:3]) + "  \033[0m") 
     

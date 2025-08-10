@@ -131,7 +131,7 @@ def deref_from_file(this: object, attr_name: str, attr_type: type, idx: int, obj
                 ref = objects[ix - 1]
             if not isinstance(ref, attr_type):
                 raise TypeError("Expected {}, got {} in object {}".format(attr_type.__name__, type(ref).__name__, ix))
-            if val == []:
+            if isinstance(val, list):
                 val.append(ref)
             else:
                 val = ref
