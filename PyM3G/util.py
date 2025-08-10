@@ -105,3 +105,34 @@ def obj2str(obtype, values):
 def const2str(const_id):
     """Return a string representing a constant value"""
     return _constants.get(const_id)
+
+
+def deref_from_file(this: object, attr_name: str, attr_type: type, idx: int, objects: list):
+    """Sets a reference from the objects list by index"""
+    if objects is None:
+        print("deref_from_file() failed with arg objects being None")
+        return
+    if objects is []:
+        return
+    val = None
+    if not isinstance(idx, (list, tuple)):
+        idx = (idx,)
+    else:
+        val = []
+    for ix in idx:
+        if ix > len(objects):
+            raise IndexError("IndexError: Tried to derefence {} with ObjectIndex = {} from objects list of {} elemnts".format(attr_name, ix, len(objects)))
+        if ix == 0:
+            val = None
+        else:
+            if ix - 1 == len(objects):
+                ref = this
+            else:
+                ref = objects[ix - 1]
+            if not isinstance(ref, attr_type):
+                raise TypeError("Expected {}, got {} in object {}".format(attr_type.__name__, type(ref).__name__, ix))
+            if val == []:
+                val.append(ref)
+            else:
+                val = ref
+    setattr(this, attr_name, val)

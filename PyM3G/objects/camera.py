@@ -3,6 +3,7 @@
 from struct import unpack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.node import Node
+from PyM3G.data.matrix import Matrix
 
 
 class Camera(Node):
@@ -10,15 +11,18 @@ class Camera(Node):
     A scene graph node that defines the position of the viewer in the scene and the
     projection from 3D to 2D
     """
+    GENERIC = 48
+    PARALLEL = 49
+    PERSPECTIVE = 50
 
     def __init__(self):
         super().__init__()
-        self.projection_type = 48
-        self.projection_matrix = None
-        self.fovy = None
-        self.aspect_ratio = None
-        self.near = None
-        self.far = None
+        self.projection_type = Camera.GENERIC
+        self.projection_matrix = Matrix.identity()
+        self.fovy: float = None
+        self.aspect_ratio: float = None
+        self.near: float = None
+        self.far: float = None
 
     def __str__(self):
         return obj2str(
@@ -33,12 +37,14 @@ class Camera(Node):
             ],
         ) + super().inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         self.projection_type = unpack("<B", reader.read(1))[0]
-        if self.projection_type == 48:
-            self.projection_matrix = unpack("<16f", reader.read(64))
+        if self.projection_type == Camera.GENERIC:
+            self.projection_matrix = Matrix(unpack("<16f", reader.read(64)))
         else:
             (self.fovy, self.aspect_ratio, self.near, self.far) = unpack(
                 "<4f", reader.read(16)
             )
+
+    # TODO write

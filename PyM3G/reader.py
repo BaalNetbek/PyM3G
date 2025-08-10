@@ -133,7 +133,7 @@ class M3GReader:
                 return True
         return False
 
-    def parse_object(self, objtype, data):
+    def parse_object(self, objtype, data, before_objects = None):
         """Parse an object out of a binary data chunk"""
         rdr = BytesIO(data)
         if objtype in self._type2class:
@@ -148,7 +148,7 @@ class M3GReader:
             obj.__class__.__name__,
             extra={"markup": True},
         )
-        obj.read(rdr)
+        obj.read(rdr, before_objects)
 
         bytes_unread = len(rdr.read())
         if obj is None and bytes_unread > 0:
@@ -164,7 +164,7 @@ class M3GReader:
             if object_header == b"":
                 break
             object_type, size = unpack("<BI", object_header)
-            self.objects.append(self.parse_object(object_type, rdr.read(size)))
+            self.objects.append(self.parse_object(object_type, rdr.read(size), self.objects))
         rdr.close()
 
     def read_sections(self):

@@ -10,20 +10,28 @@ class KeyframeSequence(Object3D):
     Encapsulates animation data as a sequence of time-stamped, vector-valued keyframes
     """
 
+    CONSTANT = 192
+    LINEAR = 176
+    LOOP = 193
+    SLERP = 177
+    SPLINE = 178
+    SQUAD = 179
+    STEP = 180
+
     def __init__(self):
         super().__init__()
-        self.interpolation = None
-        self.repeat_mode = None
-        self.encoding = None
-        self.duration = None
-        self.valid_range_first = None
-        self.valid_range_last = None
-        self.component_count = None
-        self.keyframe_count = None
-        self.time = []
-        self.vector_value = []
-        self.vector_bias = []
-        self.vector_scale = []
+        self.interpolation: int  = None
+        self.repeat_mode: int  = None
+        self.encoding: int  = None
+        self.duration: int  = None
+        self.valid_range_first: int  = None
+        self.valid_range_last: int  = None
+        self.component_count: int  = None
+        self.keyframe_count: int = None
+        self.time: list[int] = []
+        self.vector_value: list = []
+        self.vector_bias: list[float] = []
+        self.vector_scale: list[float] = []
 
     def __str__(self):
         return obj2str(
@@ -44,8 +52,8 @@ class KeyframeSequence(Object3D):
             ],
         ) + super().inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         (
             self.interpolation,
             self.repeat_mode,

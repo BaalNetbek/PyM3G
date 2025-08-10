@@ -28,7 +28,7 @@ class Header:
             ],
         )
 
-    def read(self, reader):
+    def read(self, reader, objects=None):
         """Read header from file stream"""
         self.version = unpack("<BB", reader.read(2))
         (

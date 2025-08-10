@@ -1,9 +1,9 @@
 """Skinned Mesh Class"""
 
 from struct import unpack
-from PyM3G.util import obj2str
+from PyM3G.util import obj2str, deref_from_file
 from PyM3G.objects.mesh import Mesh
-
+from PyM3G.objects.group import Group
 
 class SkinnedMesh(Mesh):
     """
@@ -12,9 +12,10 @@ class SkinnedMesh(Mesh):
 
     def __init__(self):
         super().__init__()
-        self.skeleton = None
+        self.skeleton_idx = None
+        self.skeleton: Group = None
         self.transform_reference_count = None
-        self.transform_node = []
+        self.transform_node = [] # TODO
         self.first_vertex = []
         self.vertex_count = []
         self.weight = []
@@ -23,7 +24,7 @@ class SkinnedMesh(Mesh):
         return obj2str(
             "SkinnedMesh",
             [
-            ("Skeleton", self.skeleton),
+            ("Skeleton", self.skeleton_idx),
             ("Transform Reference Count", self.transform_reference_count),
             ("Transform Node", "Array of {0} items".format(len(self.transform_node))),
             ("First Vertex", "Array of {0} items".format(len(self.first_vertex))),
@@ -32,9 +33,9 @@ class SkinnedMesh(Mesh):
             ],
         ) + super(SkinnedMesh, self).inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
-        self.skeleton, self.transform_reference_count = unpack("<II", reader.read(8))
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
+        self.skeleton_idx, self.transform_reference_count = unpack("<II", reader.read(8))
         for _ in range(self.transform_reference_count):
             (transform_node, first_vertex, vertex_count, weight) = unpack(
                 "<3Ii", reader.read(16)
@@ -43,3 +44,7 @@ class SkinnedMesh(Mesh):
             self.first_vertex.append(first_vertex)
             self.vertex_count.append(vertex_count)
             self.weight.append(weight)
+            
+        deref_from_file(self, "skeleton", Group, self.skeleton_idx, objects)
+
+    # TODO write

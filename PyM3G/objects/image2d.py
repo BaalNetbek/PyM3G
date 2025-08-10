@@ -9,15 +9,21 @@ class Image2D(Object3D):
     """
     A two-dimensional image that can be used as a texture, background or sprite image
     """
+    
+    ALPHA = 96
+    LUMINANCE = 97
+    LUMINANCE_ALPHA = 98
+    RGB = 99
+    RGBA = 100
 
     def __init__(self):
         super().__init__()
         self.image_format = None
-        self.is_mutable = None
-        self.width = None
-        self.height = None
-        self.palette = []
-        self.pixels = []
+        self.is_mutable: bool = False
+        self.width: int = None
+        self.height: int = None
+        self.palette: list[int] = []
+        self.pixels: list[int] = []
 
     def __str__(self):
         return obj2str(
@@ -31,8 +37,8 @@ class Image2D(Object3D):
             ],
         ) + super(Image2D, self).inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         (self.image_format, self.is_mutable, self.width, self.height) = unpack(
             "<B?II", reader.read(10)
         )

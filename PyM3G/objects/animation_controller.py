@@ -32,8 +32,8 @@ class AnimationController(Object3D):
             ],
         ) + super().inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         (
             self.speed,
             self.weight,

@@ -1,7 +1,8 @@
 """Object3D Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str
+from PyM3G.util import obj2str, deref_from_file
+
 
 class Object3D:
     """
@@ -10,6 +11,7 @@ class Object3D:
 
     def __init__(self):
         self.user_id = 0
+        self.animation_tracks_idx = []
         self.animation_tracks = []
         self.user_parameters = {}
 
@@ -18,39 +20,43 @@ class Object3D:
             "Object3D",
             [
                 ("User ID", self.user_id),
-                ("Animation Tracks", self.animation_tracks),
+                ("Animation Tracks", self.animation_tracks_idx),
                 ("User Parameters", self.user_parameters),
             ],
         )
     
     def inherited_str(self):
         if (self.user_id != 0
-            or self.animation_tracks != []
+            or self.animation_tracks_idx != []
             or self.user_parameters != {}):
             return "From: " + Object3D.__str__(self)
         return "From: Object3D: default values\n"
 
-    def read(self, reader):
+    def read(self, reader, objects=None):
         """Read object data from an input stream"""
         self.user_id, at_count = unpack("<II", reader.read(8))
         if at_count > 0:
             for _ in range(at_count):
-                self.animation_tracks.append(unpack("<I", reader.read(4))[0])
+                self.animation_tracks_idx.append(unpack("<I", reader.read(4))[0])
         up_count = unpack("<I", reader.read(4))[0]
         if up_count > 0:
             for _ in range(up_count):
                 pid, psz = unpack("<II", reader.read(8))
                 self.user_parameters[pid] = reader.read(psz)
-
+        
+        # importing here to evade import loop
+        from PyM3G.objects.animation_track import AnimationTrack 
+        deref_from_file(self, "animation_tracks", AnimationTrack, self.animation_tracks_idx, objects)
+            
     def write(self, writer):
         """Write object data to an output stream"""
         writer.write(pack(
             "<II",
             self.user_id, 
-            len(self.animation_tracks)
+            len(self.animation_tracks_idx)
             ))
-        if len(self.animation_tracks) > 0:
-            for track in self.animation_tracks:
+        if len(self.animation_tracks_idx) > 0:
+            for track in self.animation_tracks_idx:
                 writer.write(pack("<I", track))
         writer.write(pack("<I", len(self.user_parameters)))
         if len(self.user_parameters) > 0:

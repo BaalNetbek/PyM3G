@@ -46,11 +46,10 @@ class Transformable(Object3D):
             or self.matrix != Matrix.identity()
             ):
                 return "From: " + Transformable.__str__(self)
-        return "From: Transformable: default values"
+        return "From: Transformable: default values"    
     
-        return ""
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         self.has_component_transform = unpack("<?", reader.read(1))[0]
         if self.has_component_transform:
             self.translation = unpack("<3f", reader.read(12))

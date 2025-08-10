@@ -9,13 +9,13 @@ class TriangleStripArray(Object3D):
     """
     TriangleStripArray defines an array of triangle strips
     """
-
+    
     def __init__(self):
         super().__init__()
-        self.encoding = None
-        self.start_index = None
-        self.indices = []
-        self.strip_lengths = []
+        self.encoding: int = None
+        self.start_index: int = None
+        self.indices: list[int] = []
+        self.strip_lengths: list[int] = []
 
     def __str__(self):
         return obj2str(
@@ -28,8 +28,8 @@ class TriangleStripArray(Object3D):
             ],
         ) + super().inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         self.start_index = 0
         self.encoding = unpack("<B", reader.read(1))[0]
         if self.encoding == 0:

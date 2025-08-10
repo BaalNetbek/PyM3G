@@ -40,8 +40,8 @@ class Background(Object3D):
             ],
         ) + super().inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         self.background_color = unpack("<4f", reader.read(16))
         (
             self.background_image,
@@ -54,3 +54,5 @@ class Background(Object3D):
             self.depth_clear_enabled,
             self.color_clear_enabled,
         ) = unpack("<IBB4I??", reader.read(24))
+
+    # TODO write

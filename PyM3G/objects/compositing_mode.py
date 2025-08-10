@@ -9,17 +9,22 @@ class CompositingMode(Object3D):
     """
     An Appearance component encapsulating per-pixel compositing attributes
     """
+    ALPHA = 64
+    ALPHA_ADD = 65
+    MODULATE = 66
+    MODULATE_X2 = 67
+    REPLACE = 68
 
     def __init__(self):
         super().__init__()
-        self.depth_test_enabled = True
-        self.depth_write_enabled = True
-        self.color_write_enabled = True
-        self.alpha_write_enabled = True
-        self.blending = 68
-        self.alpha_threshold = 0.0
-        self.depth_offset_factor = 0.0
-        self.depth_offset_units = 0.0
+        self.depth_test_enabled: bool = True
+        self.depth_write_enabled: bool = True
+        self.color_write_enabled: bool = True
+        self.alpha_write_enabled: bool = True
+        self.blending: int = CompositingMode.REPLACE
+        self.alpha_threshold: float = 0.0
+        self.depth_offset_factor: float = 0.0
+        self.depth_offset_units: float = 0.0
 
     def __str__(self):
         return obj2str(
@@ -36,8 +41,8 @@ class CompositingMode(Object3D):
             ],
         ) + super().inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         (
             self.depth_test_enabled,
             self.depth_write_enabled,
@@ -48,3 +53,5 @@ class CompositingMode(Object3D):
             self.depth_offset_factor,
             self.depth_offset_units,
         ) = unpack("<4?BBff", reader.read(14))
+
+    # TODO write

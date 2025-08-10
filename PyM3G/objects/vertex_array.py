@@ -13,11 +13,11 @@ class VertexArray(Object3D):
 
     def __init__(self):
         super().__init__()
-        self.component_size = None
-        self.component_count = None
-        self.encoding = None
-        self.vertex_count = None
-        self.vertices = []
+        self.component_size: int = None
+        self.component_count: int = None
+        self.encoding: int = None
+        self.vertex_count: int = None
+        self.vertices: list[int] = []
 
     def __str__(self):
         return obj2str(
@@ -30,9 +30,9 @@ class VertexArray(Object3D):
                 ("Vertices", "Array of %d items"%len(self.vertices)),
             ],
         ) + super().inherited_str()
-
-    def read(self, reader):
-        super().read(reader)
+    
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         self.vertices = []
         (
             self.component_size,

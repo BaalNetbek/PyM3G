@@ -50,8 +50,8 @@ class Node(Transformable):
                 return "From: " + Node.__str__(self)
         return "From: Node:\n\tdefault values"
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         (
             self.enable_rendering,
             self.enable_picking,

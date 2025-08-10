@@ -14,7 +14,7 @@ class ExternalReference:
     def __str__(self):
         return obj2str("External Reference", [("URI", self.uri)])
 
-    def read(self, reader):
+    def read(self, reader, objects=None):
         """Read external reference string from file stream"""
         self.uri = reader.read().rstrip(b"\x00").decode("utf-8")
 

@@ -1,9 +1,10 @@
 """World Class"""
 
 from struct import unpack
-from PyM3G.util import obj2str
+from PyM3G.util import obj2str, deref_from_file
 from PyM3G.objects.group import Group
-
+from PyM3G.objects.background import Background
+from PyM3G.objects.camera import Camera
 
 class World(Group):
     """
@@ -12,14 +13,23 @@ class World(Group):
 
     def __init__(self):
         super().__init__()
-        self.active_camera = None
-        self.background = None
+        self.active_camera_idx: int = None
+        self.active_camera: Camera = None
+        self.background_idx: int = None
+        self.background: Background = None
 
     def __str__(self):
         return obj2str(
             "World",
-            [("Active Camera", self.active_camera), ("Background", self.background)],
+            [("Active Camera", self.active_camera_idx), ("Background", self.background_idx)],
         ) + super().inherited_str()
-    def read(self, reader):
-        super().read(reader)
-        self.active_camera, self.background = unpack("<II", reader.read(8))
+    
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
+        self.active_camera_idx, self.background_idx = unpack("<II", reader.read(8))
+        
+        deref_from_file(self, "active_camera", Camera, self.active_camera_idx, objects)
+        deref_from_file(self, "background", Background, self.background_idx, objects)
+
+    # TODO 
+    # def write(self, writer):

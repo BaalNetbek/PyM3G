@@ -1,10 +1,11 @@
 """Mesh Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str
+from PyM3G.util import obj2str, deref_from_file
 from PyM3G.objects.node import Node
-# from PyM3G.objects.vertex_buffer import VertexBuffer
-# from PyM3G.objects.appearance import Appearance  
+from PyM3G.objects.vertex_buffer import VertexBuffer
+from PyM3G.objects.appearance import Appearance 
+from PyM3G.objects.triangle_strip_array import TriangleStripArray 
 
 class Mesh(Node):
     """
@@ -14,43 +15,78 @@ class Mesh(Node):
 
     def __init__(self):
         super().__init__()
-        self.vertex_buffer: int = None
+        self.vertex_buffer_idx: int = None
+        self.vertex_buffer: VertexBuffer = None
         self.submesh_count: int = None
-        self.index_buffer: list[int] = []
-        self.appearance: list[int] = []
+        self.index_buffer_idx: list[int] = []
+        self.index_buffer: list[TriangleStripArray] = []
+        self.appearance_idx: list[int] = []
+        self.appearance: list[Appearance] = []
 
     def __str__(self):
         return obj2str(
             "Mesh",
             [
-                ("Vertex Buffer", self.vertex_buffer),
+                ("Vertex Buffer", self.vertex_buffer_idx),
                 ("Submesh Count", self.submesh_count),
-                ("Index Buffer", self.index_buffer),
-                ("Appearance", self.appearance),
+                ("Index Buffer", self.index_buffer_idx),
+                ("Appearance", self.appearance_idx),
             ],
         ) + super().inherited_str()
     
     def inherited_str(self):
-        if (self.vertex_buffer != None
+        if (self.vertex_buffer_idx != None
             or self.submesh_count != None
-            or self.index_buffer != []
-            or self.appearance != []):
+            or self.index_buffer_idx != []
+            or self.appearance_idx != []):
                 return "From: " + Mesh.__str__(self)
         return "From: Mesh:\n\tdefault values"
 
-    def read(self, reader):
-        super().read(reader)
-        self.vertex_buffer, self.submesh_count = unpack("<II", reader.read(8))
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
+        self.vertex_buffer_idx, self.submesh_count = unpack("<II", reader.read(8))
         for _ in range(self.submesh_count):
-            self.index_buffer.append(unpack("<I", reader.read(4))[0])
-            self.appearance.append(unpack("<I", reader.read(4))[0])
-    
+            self.index_buffer_idx.append(unpack("<I", reader.read(4))[0])
+            self.appearance_idx.append(unpack("<I", reader.read(4))[0])
+     
+        deref_from_file(self, "vertex_buffer", VertexBuffer, self.vertex_buffer_idx, objects)
+        deref_from_file(self, "index_buffer", TriangleStripArray, self.index_buffer_idx, objects)
+        deref_from_file(self, "appearance", Appearance, self.appearance_idx, objects)
+
     def write(self, writer):
         super().write(writer)
-        writer.write(pack("<II", self.vertex_buffer, self.submesh_count))
+        writer.write(pack("<II", self.vertex_buffer_idx, self.submesh_count))
         for i in range(self.submesh_count):
-            writer.write(pack("<I", self.index_buffer[i]))
-            writer.write(pack("<I", self.appearance[i]))
+            writer.write(pack("<I", self.index_buffer_idx[i]))
+            writer.write(pack("<I", self.appearance_idx[i]))
+
+    # def update_references(self, objects):
+    #     """Updates references from m3g file extracted objects list."""
+    #     vb = objects[self.vertex_buffer_idx-1]
+    #     if not isinstance(vb, VertexBuffer):
+    #         raise TypeError("Expected VertexBuffer, got {}".format(type(vb).__name__))
+    #     self.vertex_buffer = vb
+    #     for ibi in self.index_buffer_idx:
+    #         ib = objects[ibi - 1]
+    #         if not isinstance(ib, TriangleStripArray):
+    #             raise TypeError("Expected {}, got {}".format(TriangleStripArray.__name__, type(vb).__name__))
+    #         self.index_buffer.append(ib)
+    # @staticmethod
+    # def update_reference(field, field_type, idx, objects):
+    #     if not isinstance([idx], (list, tuple)):
+    #         idx = (idx,)
+    #         field = None
+    #     else:
+    #         field = []
+    #     for ix in idx:
+    #         ref = objects[ix - 1]
+    #         if not isinstance(ref, field_type):
+    #             raise TypeError("Expected {}, got {}".format(field_type.__name__, type(ref).__name__))
+    #         if field == []:
+    #             field.append(ref)
+    #         else:
+    #             field = ref
+
 
     # def get_appearance(self, index: int) -> Appearance:    
     #     """

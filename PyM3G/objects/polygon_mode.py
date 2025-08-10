@@ -10,11 +10,19 @@ class PolygonMode(Object3D):
     An Appearance component encapsulating polygon-level attributes
     """
 
+    CULL_BACK = 160
+    CULL_FRONT = 161
+    CULL_NONE = 162
+    SHADE_FLAT = 164
+    SHADE_SMOOTH = 165
+    WINDING_CCW = 168
+    WINDING_CW = 169
+
     def __init__(self):
         super().__init__()
-        self.culling = 160
-        self.shading = 165
-        self.winding = 168
+        self.culling = PolygonMode.CULL_BACK
+        self.shading = PolygonMode.SHADE_SMOOTH
+        self.winding = PolygonMode.WINDING_CCW
         self.two_sided_lighting_enabled = False
         self.local_camera_lighting_enabled = False
         self.perspective_correction_enabled = False
@@ -32,8 +40,8 @@ class PolygonMode(Object3D):
             ],
         ) + super().inherited_str()
 
-    def read(self, reader):
-        super().read(reader)
+    def read(self, reader, objects=None):
+        super().read(reader, objects)
         (
             self.culling,
             self.shading,
