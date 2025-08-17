@@ -51,6 +51,9 @@ class PolygonMode(Object3D):
             self.perspective_correction_enabled,
         ) = unpack("<3B3?", reader.read(6))
 
+    def update_ref(self, objects):
+        super().update_ref(objects)
+
     def write(self, writer):
         super().write(writer)
         writer.write(

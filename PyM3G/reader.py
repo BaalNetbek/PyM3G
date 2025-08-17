@@ -96,7 +96,7 @@ class M3GReader:
             self.file.close()
             return
         self.read_sections()
-        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections]) + " - " + str(self.sections[self.sect_cnt-1][1]) + " total.")
+        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections]) + " - " + str(self.sections[self.sect_cnt-1][1]) + "objects total.")
         self.file.close()
         self.status = M3GStatus.SUCCESS
 

@@ -10,11 +10,11 @@ class Header:
     """
 
     def __init__(self):
-        self.version = None
-        self.has_external_references = None
-        self.total_file_size = None
-        self.approximate_content_size = None
-        self.authoring_field = None
+        self.version: list[int] = None
+        self.has_external_references: bool = None
+        self.total_file_size: int = None
+        self.approximate_content_size: int = None
+        self.authoring_field: str = None
 
     def __str__(self):
         return obj2str(
@@ -38,6 +38,8 @@ class Header:
         ) = unpack("<?II", reader.read(9))
         self.authoring_field = reader.read().rstrip(b"\x00").decode("utf-8")
 
+    def update_ref(self, objects):
+        pass
     
     def write(self, writer):
         """

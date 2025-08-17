@@ -14,7 +14,7 @@ class Node(Transformable):
         self.enable_rendering = True
         self.enable_picking = True
         self.alpha_factor = 1.0
-        self.scope = -1
+        self.scope = 0xffffffff
         self.has_alignment = None
         self.z_target = None
         self.y_target = None
@@ -25,7 +25,7 @@ class Node(Transformable):
         return obj2str(
             "Node",
             [
-                ("Enable Rendering", self.has_component_transform),
+                ("Enable Rendering", self.enable_rendering),
                 ("Enable Picking", self.enable_picking),
                 ("Alpha Factor", self.alpha_factor),
                 ("Scope", hex(self.scope)),
@@ -69,10 +69,13 @@ class Node(Transformable):
             )
         self.alpha_factor = self.alpha_factor / 255.0
 
+    def update_ref(self, objects):
+        super().update_ref(objects)
+
     def write(self, writer):
         super().write(writer)
-        writer.write(pack(
-                "<??BI?",
+        writer.write(pack( # line 79
+                "<??BI?", 
                 self.enable_rendering,
                 self.enable_picking,
                 int(self.alpha_factor * 255 + 0.5),

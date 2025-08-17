@@ -18,7 +18,7 @@ class Transformable(Object3D):
         self.translation = (0, 0, 0)
         self.scale = (1, 1, 1)
         self.orientation_angle = 0
-        self.orientation_axis = None
+        self.orientation_axis = (0,0,1)
         self.has_general_transform = None
         self.matrix = Matrix.identity()
 
@@ -59,6 +59,9 @@ class Transformable(Object3D):
         self.has_general_transform = unpack("<?", reader.read(1))[0]
         if self.has_general_transform:
             self.matrix = Matrix(unpack("<16f", reader.read(64)))
+
+    def update_ref(self, objects):
+        super().update_ref(objects)
 
     def write(self, writer):
         super().write(writer)

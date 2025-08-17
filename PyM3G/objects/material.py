@@ -43,6 +43,9 @@ class Material(Object3D):
             "<f?", reader.read(5)
         )
 
+    def update_ref(self, objects):
+        super().update_ref(objects)
+
     def write(self, writer):
         super().write(writer)
         writer.write(pack("<3B", *self.ambient_color.to_list(3)))

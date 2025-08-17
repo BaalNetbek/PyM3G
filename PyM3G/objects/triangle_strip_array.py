@@ -54,6 +54,9 @@ class TriangleStripArray(Object3D):
         for _ in range(scount):
             self.strip_lengths.append(unpack("<I", reader.read(4))[0])
 
+    def update_ref(self, objects):
+        super().update_ref(objects)
+
     def write(self, writer):
         super().write(writer)
         writer.write(pack("<B", self.encoding))

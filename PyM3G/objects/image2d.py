@@ -50,6 +50,9 @@ class Image2D(Object3D):
             for _ in range(pxl):
                 self.pixels.append(unpack("<B", reader.read(1))[0])
 
+    def update_ref(self, objects):
+        super().update_ref(objects)
+
     def write(self, writer):
         super().write(writer)
         writer.write(pack("<B?II", self.image_format, self.is_mutable, self.width, self.height))

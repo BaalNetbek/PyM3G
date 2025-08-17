@@ -3,6 +3,7 @@
 from struct import unpack, pack
 from PyM3G.util import obj2str, deref_from_file
 from PyM3G.data.color import Color
+from PyM3G.data.object_index import ObjectIndex
 from PyM3G.objects.object3d import Object3D
 from PyM3G.objects.vertex_array import VertexArray
 
@@ -18,8 +19,8 @@ class VertexBuffer(Object3D):
         self.default_color = Color([0xff, 0xff, 0xff, 0xff])
         self.positions_idx = None
         self.positions: VertexArray = None
-        self.position_bias = None
-        self.position_scale = None
+        self.position_bias = (0.0, 0.0, 0.0)
+        self.position_scale = 1.0
         self.normals_idx = None
         self.normals: VertexArray = None
         self.colors_idx = None
@@ -35,15 +36,15 @@ class VertexBuffer(Object3D):
             "VertexBuffer",
             [
                 ("Default Color", self.default_color),
-                ("Positions", self.positions_idx),
+                ("Positions", ObjectIndex(self.positions_idx)),
                 ("Position Bias", self.position_bias),
                 ("Position Scale", self.position_scale),
-                ("Normals", self.normals_idx),
-                ("Colors", self.colors_idx),
+                ("Normals", ObjectIndex(self.normals_idx)),
+                ("Colors", ObjectIndex(self.colors_idx)),
                 ("Texcoord Array Count", self.texcoord_array_count),
                 ("Texcoords", self.tex_coords_idx),
-                ("Texcoord Bias", "\n\t" + str(self.tex_coord_bias) + "\n\tresolution:\n\t{}".format([round(1/b, 3) for bs in self.tex_coord_bias for b in bs])),
-                ("Texcoord Scale", "{} \n\tresolution {}".format(self.tex_coord_scale, [round(1/s, 3) for s in self.tex_coord_scale])),
+                ("Texcoord Bias", "\n\t" + str(self.tex_coord_bias) + "\n\tresolution:\n\t{}".format([round(1/b, 3) if b != 0 else 'inf'  for bs in self.tex_coord_bias for b in bs])),
+                ("Texcoord Scale", "{} \n\tresolution {}".format(self.tex_coord_scale, [round(1/s, 3) if s != 0 else 'inf' for s in self.tex_coord_scale])),
             ],
         ) + super().inherited_str()
 
@@ -67,9 +68,29 @@ class VertexBuffer(Object3D):
         deref_from_file(self, "positions", VertexArray, self.positions_idx, objects)
         deref_from_file(self, "normals", VertexArray, self.normals_idx, objects)
         deref_from_file(self, "colors", VertexArray, self.colors_idx, objects)
-        deref_from_file(self, "tex_coords", VertexArray, self.tex_coords_idx, objects)    
+        deref_from_file(self, "tex_coords", VertexArray, self.tex_coords_idx, objects)
+
+    def update_ref(self, objects):
+        super().update_ref(objects)
+        self.tex_coords_idx = []
+        self.positions_idx = 0
+        self.normals_idx = 0
+        self.colors_idx = 0
+        for i, o in enumerate(objects):
+            if o == self.positions:
+                self.positions_idx = i+1
+            if o == self.normals:
+                self.normals_idx = i+1
+            if o == self.colors:
+                self.colors_idx = i+1
+            for tc in self.tex_coords:
+                if o == tc:
+                    self.tex_coords_idx.append(i+1)
 
     def write(self, writer):
+        if (self.texcoord_array_count != len(self.tex_coords)):
+            print("Warning: VertexBuffer.write(): texcoord_array_count != len(tex_coords). texcoord_array_count updated.\n")
+            self.texcoord_array_count = len(self.tex_coords)
         super().write(writer)
         writer.write(pack("<4B", *self.default_color.to_list(4)))
         writer.write(pack("<I", self.positions_idx))

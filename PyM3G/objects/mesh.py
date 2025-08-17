@@ -53,6 +53,21 @@ class Mesh(Node):
         deref_from_file(self, "index_buffer", TriangleStripArray, self.index_buffer_idx, objects)
         deref_from_file(self, "appearance", Appearance, self.appearance_idx, objects)
 
+    def update_ref(self, objects):
+        super().update_ref(objects)
+        self.vertex_buffer_idx = 0
+        self.index_buffer_idx = []
+        self.appearance_idx = []
+        for i, o in enumerate(objects):
+            if o == self.vertex_buffer:
+                self.vertex_buffer_idx = i+1
+            for a in self.appearance:
+                if o == a:
+                    self.appearance_idx.append(i+1)
+            for ib in self.index_buffer:
+                if o == ib:
+                    self.index_buffer_idx.append(i+1)
+
     def write(self, writer):
         super().write(writer)
         writer.write(pack("<II", self.vertex_buffer_idx, self.submesh_count))

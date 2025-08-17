@@ -30,6 +30,14 @@ class Group(Node):
             self.children_idx.append(unpack("<I", reader.read(4))[0])
         
         deref_from_file(self, "children", Node, self.children_idx, objects)
+
+    def update_ref(self, objects):
+        super().update_ref(objects)
+        self.children_idx = []
+        for i, o in enumerate(objects):
+            for ch in self.children:
+                if o == ch:
+                    self.children_idx.append(i+1)
         
     def write(self, writer):
         super().write(writer)

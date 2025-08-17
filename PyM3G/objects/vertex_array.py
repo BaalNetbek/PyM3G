@@ -11,13 +11,14 @@ class VertexArray(Object3D):
     texture coordinates
     """
 
-    def __init__(self):
+    def __init__(self, numVertices: int = None, numComponents: int = None, componentSize: int  = None, vertices: list[list[int]] = []):
         super().__init__()
-        self.component_size: int = None
-        self.component_count: int = None
-        self.encoding: int = None
-        self.vertex_count: int = None
-        self.vertices: list[int] = []
+        self.component_size: int = componentSize 
+        """1-byte, 2-int16"""
+        self.component_count: int = numComponents
+        self.encoding: int = 0
+        self.vertex_count: int = numVertices
+        self.vertices: list[list[int]] = vertices
 
     def __str__(self):
         return obj2str(
@@ -80,8 +81,16 @@ class VertexArray(Object3D):
                 self.vertices.append(tvtx)
                 delta = tvtx
 
+    def update_ref(self, objects):
+        super().update_ref(objects)
+
     def write(self, writer):
         super().write(writer)
+        vCount = len(self.vertices)
+        if (vCount != self.vertex_count):
+            if (vCount % 1 == 0):
+                print("Warning: VertexArray.write(): vertex_count != len(vertices). vertex_count updated.\n")
+                self.vertex_count = int(vCount)
         writer.write(pack(
             "<3BH", 
             self.component_size, 

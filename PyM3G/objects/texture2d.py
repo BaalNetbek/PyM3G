@@ -61,6 +61,14 @@ class Texture2D(Transformable):
         ) = unpack("<5B", reader.read(5))
         
         deref_from_file(self, "image", Image2D, self.image_idx, objects)
+
+    def update_ref(self, objects):
+        super().update_ref(objects)
+        self.image_idx = 0
+        for i, o in enumerate(objects):
+            if o == self.image_idx:
+                self.image_idx = i+1
+
     
     def write(self, writer):
         super().write(writer)

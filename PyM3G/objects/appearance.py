@@ -20,8 +20,9 @@ class Appearance(Object3D):
         super().__init__()
         self.layer = 0
         self.compositing_mode_idx = None
-        self.compositing_mode: PolygonMode = None
-        self.fog = None
+        self.compositing_mode: CompositingMode = None
+        self.fog_idx = None
+        self.fog: Fog = None
         self.polygon_mode_idx = None
         self.polygon_mode: PolygonMode = None
         self.material_idx = None
@@ -35,7 +36,7 @@ class Appearance(Object3D):
             [
                 ("Layer", self.layer),
                 ("Compositing Mode", self.compositing_mode_idx),
-                ("Fog", self.fog),
+                ("Fog", self.fog_idx),
                 ("Polygon Mode", self.polygon_mode_idx),
                 ("Material", self.material_idx),
                 ("Textures", self.textures_idx),
@@ -48,7 +49,7 @@ class Appearance(Object3D):
         (
             self.layer,
             self.compositing_mode_idx,
-            self.fog,
+            self.fog_idx,
             self.polygon_mode_idx,
             self.material_idx,
             texcount,
@@ -56,11 +57,31 @@ class Appearance(Object3D):
         for _ in range(texcount):
             self.textures_idx.append(unpack("<I", reader.read(4))[0])
         
-        deref_from_file(self, "compositing_mode", CompositingMode, self.compositing_mode_idx, objects)
-        deref_from_file(self, "polygon_mode", PolygonMode, self.polygon_mode_idx, objects)
-        deref_from_file(self, "material", Material, self.material_idx, objects)
-        deref_from_file(self, "textures", Texture2D, self.textures_idx, objects)
-        
+        deref_from_file(self, "compositing_mode",   CompositingMode,    self.compositing_mode_idx,  objects)
+        deref_from_file(self, "fog",                Fog,                self.fog_idx,               objects)
+        deref_from_file(self, "polygon_mode",       PolygonMode,        self.polygon_mode_idx,      objects)
+        deref_from_file(self, "material",           Material,           self.material_idx,          objects)
+        deref_from_file(self, "textures",           Texture2D,          self.textures_idx,          objects)
+
+    def update_ref(self, objects):
+        super().update_ref(objects)
+        self.compositing_mode_idx = 0
+        self.fog_idx = 0
+        self.polygon_mode_idx = 0
+        self.material_idx = 0
+        self.textures_idx = []
+        for i, o in enumerate(objects):
+            if o == self.compositing_mode:
+                self.compositing_mode_idx = i+1
+            if o == self.fog:
+                self.fog_idx = i+1
+            if o == self.polygon_mode:
+                self.polygon_mode_idx = i+1
+            if o == self.material:
+                self.material_idx = i+1
+            for t in self.textures:
+                if o == t:
+                    self.textures_idx.append(i+1)       
 
     def write(self, writer):
         super().write(writer)
@@ -69,7 +90,7 @@ class Appearance(Object3D):
                 "<B5I",
                 self.layer,
                 self.compositing_mode_idx,
-                self.fog,
+                self.fog_idx,
                 self.polygon_mode_idx,
                 self.material_idx,
                 len(self.textures_idx),

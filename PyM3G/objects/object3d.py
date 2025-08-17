@@ -47,7 +47,14 @@ class Object3D:
         # importing here to evade import loop
         from PyM3G.objects.animation_track import AnimationTrack 
         deref_from_file(self, "animation_tracks", AnimationTrack, self.animation_tracks_idx, objects)
-            
+
+    def update_ref(self, objects):
+        self.animation_tracks_idx = []
+        for i, o in enumerate(objects):
+            for at in self.animation_tracks_idx:
+                if o == at:
+                    self.animation_tracks_idx.append(i+1)
+
     def write(self, writer):
         """Write object data to an output stream"""
         writer.write(pack(
