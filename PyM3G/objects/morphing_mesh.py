@@ -38,4 +38,4 @@ class MorphingMesh(Mesh):
         
         deref_from_file(self, "morph_target", VertexBuffer, self.morph_target_idx, objects)
 
-    # TODO write
+    # TODO write, upadate_ref

@@ -47,4 +47,4 @@ class SkinnedMesh(Mesh):
             
         deref_from_file(self, "skeleton", Group, self.skeleton_idx, objects)
 
-    # TODO write
+    # TODO write, upadate_ref

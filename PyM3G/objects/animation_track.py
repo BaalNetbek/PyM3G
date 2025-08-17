@@ -60,6 +60,7 @@ class AnimationTrack(Object3D):
         
         deref_from_file(self, "keyframe_sequence", KeyframeSequence, self.keyframe_sequence_idx, objects)
         deref_from_file(self, "animation_controller", AnimationController, self.animation_controller_idx, objects)
+    #TODO upadate_ref
 
     def write(self, writer):
         super().write(writer)

@@ -54,4 +54,4 @@ class CompositingMode(Object3D):
             self.depth_offset_units,
         ) = unpack("<4?BBff", reader.read(14))
 
-    # TODO write
+    # TODO write, upadate_ref

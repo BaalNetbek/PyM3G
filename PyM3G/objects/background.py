@@ -55,4 +55,4 @@ class Background(Object3D):
             self.color_clear_enabled,
         ) = unpack("<IBB4I??", reader.read(24))
 
-    # TODO write
+    # TODO write, upadate_ref

@@ -47,4 +47,4 @@ class Camera(Node):
                 "<4f", reader.read(16)
             )
 
-    # TODO write
+    # TODO write, upadate_ref

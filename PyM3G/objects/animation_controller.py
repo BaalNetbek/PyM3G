@@ -42,7 +42,9 @@ class AnimationController(Object3D):
             self.reference_sequence_time,
             self.reference_world_time,
         ) = unpack("<ffIIfI", reader.read(24))
-    
+        
+    #TODO upadate_ref
+
     def write(self, writer):
         super().write(writer)
         writer.write(

@@ -51,5 +51,5 @@ class Sprite(Node):
         
         deref_from_file(self, "image", Image2D, self.image_idx, objects)
         deref_from_file(self, "appearance", Appearance, self.appearance_idx, objects)
-    # TODO write
+    # TODO write, upadate_ref
     

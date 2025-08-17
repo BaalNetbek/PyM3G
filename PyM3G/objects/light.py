@@ -53,6 +53,8 @@ class Light(Node):
             "<3f", reader.read(12)
         )
 
+    #TODO upadate_ref
+
     def write(self, writer):
         super().write(writer)
         writer.write(pack(
@@ -68,3 +70,4 @@ class Light(Node):
             self.spot_angle,
             self.spot_exponent
         ))
+

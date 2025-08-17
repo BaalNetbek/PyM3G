@@ -103,6 +103,8 @@ class KeyframeSequence(Object3D):
                         reader.read(2 * self.component_count),
                     )
                 )
+    #TODO upadate_ref
+
     def write(self, writer):
         super().write(writer)
         writer.write(pack("<3B5I",

@@ -42,4 +42,4 @@ class Fog(Object3D):
         elif self.mode == 81:
             (self.near, self.far) = unpack("<2f", reader.read(8))
 
-    # TODO write
+    # TODO write, upadate_ref

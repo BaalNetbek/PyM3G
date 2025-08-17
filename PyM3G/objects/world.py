@@ -31,5 +31,5 @@ class World(Group):
         deref_from_file(self, "active_camera", Camera, self.active_camera_idx, objects)
         deref_from_file(self, "background", Background, self.background_idx, objects)
 
-    # TODO 
+    # TODO  upadate_ref
     # def write(self, writer):
