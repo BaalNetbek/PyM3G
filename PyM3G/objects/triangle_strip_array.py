@@ -10,6 +10,8 @@ class TriangleStripArray(Object3D):
     TriangleStripArray defines an array of triangle strips
     """
     
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.encoding: int = None

@@ -1,13 +1,15 @@
 """Object3D Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file
+from PyM3G.util import obj2str, deref_from_file, verify_ref
 
 
 class Object3D:
     """
     An abstract base class for all objects that can be part of a 3D world
     """
+
+    HAS_REFS = True
 
     def __init__(self):
         self.user_id = 0
@@ -50,10 +52,16 @@ class Object3D:
 
     def update_ref(self, objects):
         self.animation_tracks_idx = []
+        child_idx = []
+        this_idx = 0
         for i, o in enumerate(objects):
+            if o == self:
+                this_idx = i+1
             for at in self.animation_tracks_idx:
                 if o == at:
                     self.animation_tracks_idx.append(i+1)
+                    child_idx.append(i+1)   
+        verify_ref(self, this_idx, child_idx)
 
     def write(self, writer):
         """Write object data to an output stream"""

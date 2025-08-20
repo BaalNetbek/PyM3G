@@ -10,6 +10,7 @@ class VertexArray(Object3D):
     An array of integer vectors representing vertex positions, normals, colors or
     texture coordinates
     """
+    HAS_REFS = False
 
     def __init__(self, numVertices: int = None, numComponents: int = None, componentSize: int  = None, vertices: list[list[int]] = []):
         super().__init__()

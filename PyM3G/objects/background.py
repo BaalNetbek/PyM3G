@@ -3,6 +3,8 @@
 from struct import unpack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.object3d import Object3D
+from PyM3G.objects.image2d import Image2D
+from PyM3G.data.color import Color
 
 
 class Background(Object3D):
@@ -10,10 +12,13 @@ class Background(Object3D):
     Defines whether and how to clear the viewport
     """
 
+    HAS_REFS = True
+
     def __init__(self):
         super().__init__()
-        self.background_color = (0, 0, 0, 0)
-        self.background_image = None
+        self.background_color = Color(0, 0, 0, 0)
+        self.background_image_idx = None
+        self.background_image: Image2D = None
         self.background_image_mode_x = 32
         self.background_image_mode_y = 32
         self.crop_x = None
@@ -28,7 +33,7 @@ class Background(Object3D):
             "Background",
             [
                 ("Color", self.background_color),
-                ("Image", self.background_image),
+                ("Image", self.background_image_idx),
                 ("Image Mode X", const2str(self.background_image_mode_x) + " (%d)" % self.background_image_mode_x),
                 ("Image Mode Y", const2str(self.background_image_mode_y) + " (%d)" % self.background_image_mode_y),
                 ("Crop X", self.crop_x),
@@ -42,9 +47,9 @@ class Background(Object3D):
 
     def read(self, reader, objects=None):
         super().read(reader, objects)
-        self.background_color = unpack("<4f", reader.read(16))
+        self.background_color = Color(unpack("<4f", reader.read(16)))
         (
-            self.background_image,
+            self.background_image_idx,
             self.background_image_mode_x,
             self.background_image_mode_y,
             self.crop_x,

@@ -9,6 +9,8 @@ class Node(Transformable):
     An abstract base class for all scene graph nodes
     """
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.enable_rendering = True

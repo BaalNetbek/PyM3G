@@ -11,6 +11,8 @@ class World(Group):
     A special Group node that is a top-level container for scene graphs
     """
 
+    HAS_REFS = True
+
     def __init__(self):
         super().__init__()
         self.active_camera_idx: int = None

@@ -16,6 +16,8 @@ class Image2D(Object3D):
     RGB = 99
     RGBA = 100
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.image_format = None

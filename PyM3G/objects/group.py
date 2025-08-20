@@ -1,7 +1,7 @@
 """Group Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file
+from PyM3G.util import obj2str, deref_from_file, verify_ref
 from PyM3G.objects.node import Node
 
 
@@ -9,6 +9,7 @@ class Group(Node):
     """
     A scene graph node that stores an unordered set of nodes as its children
     """
+    HAS_REFS = True
 
     def __init__(self):
         super().__init__()
@@ -34,10 +35,14 @@ class Group(Node):
     def update_ref(self, objects):
         super().update_ref(objects)
         self.children_idx = []
+        this_idx = 0
         for i, o in enumerate(objects):
+            if o == self:
+                this_idx = i+1
             for ch in self.children:
                 if o == ch:
                     self.children_idx.append(i+1)
+        verify_ref(self, this_idx, self.children_idx)
         
     def write(self, writer):
         super().write(writer)

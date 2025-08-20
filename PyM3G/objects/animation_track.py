@@ -34,6 +34,8 @@ class AnimationTrack(Object3D):
     TRANSLATION = 275
     VISIBILITY = 276
 
+    HAS_REFS = True
+
     def __init__(self):
         super().__init__()
         self.keyframe_sequence_idx = None

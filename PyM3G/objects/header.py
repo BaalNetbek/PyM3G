@@ -9,12 +9,14 @@ class Header:
     Header contains metadata about the file
     """
 
-    def __init__(self):
-        self.version: list[int] = None
-        self.has_external_references: bool = None
-        self.total_file_size: int = None
-        self.approximate_content_size: int = None
-        self.authoring_field: str = None
+    HAS_REFS = False
+
+    def __init__(self, ver: list[int] | tuple[int, int] = (1,0), extern_refs: bool = False, tot_size: int = 0, uncompressed_size: int = 0,auth_text: str = "", ):
+        self.version: list[int] = ver
+        self.has_external_references: bool = extern_refs
+        self.total_file_size: int = 0
+        self.approximate_content_size: int = 0
+        self.authoring_field: str = auth_text
 
     def __str__(self):
         return obj2str(

@@ -1,7 +1,7 @@
 """Appearance Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file
+from PyM3G.util import obj2str, deref_from_file, verify_ref
 from PyM3G.objects.object3d import Object3D
 from PyM3G.objects.compositing_mode import CompositingMode
 from PyM3G.objects.fog import Fog
@@ -15,6 +15,8 @@ class Appearance(Object3D):
     A set of component objects that define the rendering attributes of a Mesh or
     Sprite3D
     """
+
+    HAS_REFS = True
 
     def __init__(self):
         super().__init__()
@@ -70,18 +72,30 @@ class Appearance(Object3D):
         self.polygon_mode_idx = 0
         self.material_idx = 0
         self.textures_idx = []
+        child_idx = []
+        this_idx = 0
         for i, o in enumerate(objects):
+            if o == self:
+                this_idx = i+1
+            if o == self:
+                this_idx = i+1
             if o == self.compositing_mode:
                 self.compositing_mode_idx = i+1
+                child_idx.append(i+1)
             if o == self.fog:
                 self.fog_idx = i+1
+                child_idx.append(i+1)
             if o == self.polygon_mode:
                 self.polygon_mode_idx = i+1
+                child_idx.append(i+1)
             if o == self.material:
                 self.material_idx = i+1
+                child_idx.append(i+1)
             for t in self.textures:
                 if o == t:
-                    self.textures_idx.append(i+1)       
+                    self.textures_idx.append(i+1)
+                    child_idx.append(i+1)
+        verify_ref(self, this_idx, child_idx)
 
     def write(self, writer):
         super().write(writer)

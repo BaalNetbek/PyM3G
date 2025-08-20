@@ -37,7 +37,9 @@ from PyM3G.objects.vertex_buffer import VertexBuffer
 from PyM3G.objects.world import World
 
 _M3G_SIG = b"\xAB\x4A\x53\x52\x31\x38\x34\xBB\x0D\x0A\x1A\x0A"
-
+"""«JSR184»"""
+_GAMELOFT_SIG = b"\xAB\x49\x4D\x2D\x4D\x33\x47\xBB\x0D\x0A\x1A\x0A" 
+"""«IM-M3G»"""
 
 class M3GReader:
     """
@@ -96,7 +98,7 @@ class M3GReader:
             self.file.close()
             return
         self.read_sections()
-        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections]) + " - " + str(self.sections[self.sect_cnt-1][1]) + "objects total.")
+        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections]) + " - " + str(self.sections[self.sect_cnt-1][1]) + " objects total.")
         self.file.close()
         self.status = M3GStatus.SUCCESS
 
@@ -123,7 +125,11 @@ class M3GReader:
 
     def verify_signature(self):
         """Verify header bytes to make sure this is a valid m3g file"""
-        if self.file.read(12) == _M3G_SIG:
+        magic = self.file.read(12)
+        if magic == _M3G_SIG:
+            return True
+        if magic == _GAMELOFT_SIG:
+            self.log.info("IM-M3G file signature detected")
             return True
         self.file.seek(-12,2)
         if self.file.read(12) == _M3G_SIG[::-1]:

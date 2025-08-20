@@ -15,6 +15,8 @@ class Light(Node):
     OMNI = 130
     SPOT = 131
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.attenuation_constant = 1.0

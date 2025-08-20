@@ -1,7 +1,7 @@
 """Vertex Buffer Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file
+from PyM3G.util import obj2str, deref_from_file, verify_ref
 from PyM3G.data.color import Color
 from PyM3G.data.object_index import ObjectIndex
 from PyM3G.objects.object3d import Object3D
@@ -13,6 +13,8 @@ class VertexBuffer(Object3D):
     VertexBuffer holds references to VertexArrays that contain the positions, colors,
     normals, and texture coordinates for a set of vertices
     """
+
+    HAS_REFS = True
 
     def __init__(self):
         super().__init__()
@@ -76,16 +78,25 @@ class VertexBuffer(Object3D):
         self.positions_idx = 0
         self.normals_idx = 0
         self.colors_idx = 0
+        child_idx = []
+        this_idx = 0
         for i, o in enumerate(objects):
+            if o == self:
+                this_idx = i+1
             if o == self.positions:
                 self.positions_idx = i+1
+                child_idx.append(i+1)   
             if o == self.normals:
                 self.normals_idx = i+1
+                child_idx.append(i+1)   
             if o == self.colors:
                 self.colors_idx = i+1
+                child_idx.append(i+1)   
             for tc in self.tex_coords:
                 if o == tc:
                     self.tex_coords_idx.append(i+1)
+                    child_idx.append(i+1)   
+        verify_ref(self, this_idx, child_idx)
 
     def write(self, writer):
         if (self.texcoord_array_count != len(self.tex_coords)):

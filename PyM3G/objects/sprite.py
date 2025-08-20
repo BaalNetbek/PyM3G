@@ -11,6 +11,8 @@ class Sprite(Node):
     A scene graph node that represents a 2-dimensional image with a 3D position
     """
 
+    HAS_REFS = True
+
     def __init__(self):
         super().__init__()
         self.image_idx = None

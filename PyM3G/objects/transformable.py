@@ -12,6 +12,8 @@ class Transformable(Object3D):
     for manipulating node and texture transformations
     """
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.has_component_transform = None

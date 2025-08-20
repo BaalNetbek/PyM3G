@@ -11,6 +11,8 @@ class MorphingMesh(Mesh):
     A scene graph node that represents a vertex morphing polygon mesh
     """
 
+    HAS_REFS = True
+
     def __init__(self):
         super().__init__()
         self.morph_target_count: int = None

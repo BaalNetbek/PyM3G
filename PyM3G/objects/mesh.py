@@ -1,7 +1,7 @@
 """Mesh Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file
+from PyM3G.util import obj2str, deref_from_file, verify_ref
 from PyM3G.objects.node import Node
 from PyM3G.objects.vertex_buffer import VertexBuffer
 from PyM3G.objects.appearance import Appearance 
@@ -12,6 +12,8 @@ class Mesh(Node):
     A scene graph node that represents a 3D object defined as a polygonal surface.
     Contains indices of objects in the scene building the mesh.
     """
+
+    HAS_REFS = True
 
     def __init__(self):
         super().__init__()
@@ -58,15 +60,23 @@ class Mesh(Node):
         self.vertex_buffer_idx = 0
         self.index_buffer_idx = []
         self.appearance_idx = []
+        child_idx = []
+        this_idx = 0
         for i, o in enumerate(objects):
+            if o == self:
+                this_idx = i+1
             if o == self.vertex_buffer:
                 self.vertex_buffer_idx = i+1
+                child_idx.append(i+1)   
             for a in self.appearance:
                 if o == a:
                     self.appearance_idx.append(i+1)
+                    child_idx.append(i+1)   
             for ib in self.index_buffer:
                 if o == ib:
                     self.index_buffer_idx.append(i+1)
+                    child_idx.append(i+1)   
+        verify_ref(self, this_idx, child_idx)
 
     def write(self, writer):
         super().write(writer)

@@ -11,6 +11,8 @@ class Material(Object3D):
     An Appearance component encapsulating material attributes for lighting computations
     """
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.ambient_color = Color([0.2, 0.2, 0.2, 0.0])

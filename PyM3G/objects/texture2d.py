@@ -1,7 +1,7 @@
 """Texture2D Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, const2str, deref_from_file
+from PyM3G.util import obj2str, const2str, deref_from_file, verify_ref
 from PyM3G.data.color import Color
 from PyM3G.objects.transformable import Transformable
 from PyM3G.objects.image2d import Image2D
@@ -23,6 +23,8 @@ class Texture2D(Transformable):
     WRAP_CLAMP = 240
     WRAP_REPEAT = 241
 
+    HAS_REFS = True
+    
     def __init__(self):
         super().__init__()
         self.image_idx: int = None
@@ -65,10 +67,15 @@ class Texture2D(Transformable):
     def update_ref(self, objects):
         super().update_ref(objects)
         self.image_idx = 0
+        child_idx = []
+        this_idx = 0
         for i, o in enumerate(objects):
-            if o == self.image_idx:
+            if o == self:
+                this_idx = i+1
+            if o == self.image:
                 self.image_idx = i+1
-
+                child_idx.append(i+1)   
+        verify_ref(self, this_idx, child_idx)
     
     def write(self, writer):
         super().write(writer)

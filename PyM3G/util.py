@@ -136,3 +136,8 @@ def deref_from_file(this: object, attr_name: str, attr_type: type, idx: int, obj
             else:
                 val = ref
     setattr(this, attr_name, val)
+
+def verify_ref(this: object, this_idx: int, child_idx: list[int]):
+    for ci in child_idx:
+            if ci >= this_idx:
+                raise(IndexError("{}.update_ref() ERROR: Child of object with idx {} has child {} serialized after itself.".format(type(this).__name__, this_idx, ci)))

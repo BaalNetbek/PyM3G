@@ -18,6 +18,8 @@ class KeyframeSequence(Object3D):
     SQUAD = 179
     STEP = 180
 
+    HAS_REFS = False
+    
     def __init__(self):
         super().__init__()
         self.interpolation: int  = None

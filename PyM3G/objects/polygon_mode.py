@@ -18,6 +18,8 @@ class PolygonMode(Object3D):
     WINDING_CCW = 168
     WINDING_CW = 169
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.culling = PolygonMode.CULL_BACK

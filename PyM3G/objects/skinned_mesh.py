@@ -10,6 +10,8 @@ class SkinnedMesh(Mesh):
     A scene graph node that represents a skeletally animated polygon mesh
     """
 
+    HAS_REFS = True
+    
     def __init__(self):
         super().__init__()
         self.skeleton_idx = None

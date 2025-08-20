@@ -15,6 +15,8 @@ class Camera(Node):
     PARALLEL = 49
     PERSPECTIVE = 50
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.projection_type = Camera.GENERIC
