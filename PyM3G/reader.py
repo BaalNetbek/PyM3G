@@ -35,11 +35,13 @@ from PyM3G.objects.triangle_strip_array import TriangleStripArray
 from PyM3G.objects.vertex_array import VertexArray
 from PyM3G.objects.vertex_buffer import VertexBuffer
 from PyM3G.objects.world import World
+from PyM3G.objects.submesh import Submesh
 
 _M3G_SIG = b"\xAB\x4A\x53\x52\x31\x38\x34\xBB\x0D\x0A\x1A\x0A"
 """«JSR184»"""
-_GAMELOFT_SIG = b"\xAB\x49\x4D\x2D\x4D\x33\x47\xBB\x0D\x0A\x1A\x0A" 
+_IM_M3G_SIG = b"\xAB\x49\x4D\x2D\x4D\x33\x47\xBB\x0D\x0A\x1A\x0A" 
 """«IM-M3G»"""
+
 
 class M3GReader:
     """
@@ -70,6 +72,7 @@ class M3GReader:
         20: VertexArray,
         21: VertexBuffer,
         22: World,
+        100: Submesh,
         255: ExternalReference,
     }
 
@@ -93,7 +96,8 @@ class M3GReader:
         if not self.file:
             self.log.error("Could not open file %s", path)
             return
-        if not self.verify_signature():
+        self.version = self.verify_signature()
+        if self.version == False:
             self.log.error("Invalid M3G file %s", path)
             self.file.close()
             return
@@ -128,7 +132,7 @@ class M3GReader:
         magic = self.file.read(12)
         if magic == _M3G_SIG:
             return True
-        if magic == _GAMELOFT_SIG:
+        if magic == _IM_M3G_SIG:
             self.log.info("IM-M3G file signature detected")
             return True
         self.file.seek(-12,2)
@@ -203,11 +207,12 @@ class M3GReader:
                 self.log.error(
                     "Checksums do not match, file '%s' may be corrupt"%self.file.name
                 )
-                return
-            self.log.info("Checksum validated successfully")
+            else:    
+                self.log.info("Checksum validated successfully")
 
             self.sections[self.sect_cnt].append(len(self.objects))
             self.sect_cnt+=1
+            return
 
     def get_object_by_id(self, obj_id):
         """Returns an object based on id"""

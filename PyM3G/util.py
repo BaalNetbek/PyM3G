@@ -25,6 +25,7 @@ _constants = {
     98: "LUMINANCE_ALPHA",
     99: "RGB",
     100: "RGBA",
+    125: "NONSTANDARD_IMAGE", # non standard
     128: "AMBIENT",
     129: "DIRECTIONAL",
     130: "OMNI",
