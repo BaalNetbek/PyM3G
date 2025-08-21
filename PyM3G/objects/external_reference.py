@@ -1,9 +1,9 @@
 """External Reference Class"""
 
 from PyM3G.util import obj2str
+from PyM3G.objects.object import Object
 
-
-class ExternalReference:
+class ExternalReference(Object):
     """
     Used for including external files (textures or other scenes)
     """

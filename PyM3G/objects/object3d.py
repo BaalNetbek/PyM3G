@@ -2,9 +2,9 @@
 
 from struct import unpack, pack
 from PyM3G.util import obj2str, deref_from_file, verify_ref
+from PyM3G.objects.object import Object
 
-
-class Object3D:
+class Object3D(Object):
     """
     An abstract base class for all objects that can be part of a 3D world
     """

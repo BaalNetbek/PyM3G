@@ -2,9 +2,9 @@
 
 from struct import unpack, pack
 from PyM3G.util import obj2str
+from PyM3G.objects.object import Object
 
-
-class Header:
+class Header(Object):
     """
     Header contains metadata about the file
     """

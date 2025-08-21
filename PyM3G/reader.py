@@ -11,6 +11,8 @@ from rich.logging import RichHandler
 
 from PyM3G.util import M3GStatus
 
+from PyM3G.data.section import Section
+
 from PyM3G.objects.animation_controller import AnimationController
 from PyM3G.objects.animation_track import AnimationTrack
 from PyM3G.objects.appearance import Appearance
@@ -92,7 +94,7 @@ class M3GReader:
 
         self.status = M3GStatus.FAILED
         self.objects = []
-        self.sections = []
+        self.sections_lens = []
         self.sect_cnt = 0
         self.file = open(path, "rb")
         if not self.file:
@@ -104,7 +106,7 @@ class M3GReader:
             self.file.close()
             return
         self.read_sections()
-        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections]) + " - " + str(self.sections[self.sect_cnt-1][1]) + " objects total.")
+        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections_lens]) + " - " + str(self.sections_lens[self.sect_cnt-1][1]) + " objects total.")
         self.file.close()
         self.status = M3GStatus.SUCCESS
 
@@ -190,34 +192,47 @@ class M3GReader:
     def read_sections(self):
         """Reads all sections from a file"""
         while True:
-            section_header = self.file.read(9)
-            if section_header == b"":
+            section = Section(self.log)
+            # section_header = self.file.read(9)
+            # if section_header == b"":
+            #     break
+            if section.read(self.file) == b'':
+                if self.objects[0].total_file_size == section.file_size:
+                    self.log.info(
+                        "File size matches size declared in [bold cyan]Header[/]",
+                        extra={"markup": True}
+                    )
+                else:
+                    self.log.error(
+                        "File size (%d Bytes) doesn't match size declared in [bold cyan]Header[/]: %d Bytes",
+                        section.file_size, self.objects[0].total_file_size,extra={"markup": True}
+                    )
                 break
-            self.sections.append([len(self.objects)])
-            self.log.info("Section @ %d", self.file.tell())
-            compression, total_len, uncomp = unpack("<BII", section_header)
-            self.log.info("Compression: %s", compression)
-            self.log.info("Total length: %d", total_len)
-            self.log.info("Uncompressed length: %d", uncomp)
-            section_length = total_len - 13
-            data = self.file.read(section_length)
-            if compression == 1:
-                self.read_objects(zlib.decompress(data))
-            elif compression == 0:
-                self.read_objects(data)
+            self.sections_lens.append([len(self.objects)])
+
+            # self.log.info("Section @ %d", self.file.tell())
+            # compression, total_len, uncomp = unpack("<BII", section_header)
+            # self.log.info("Compression: %s", compression)
+            # self.log.info("Total length: %d", total_len)
+            # self.log.info("Uncompressed length: %d", uncomp)
+            # section_length = total_len - 13
+            # data = self.file.read(section_length)
+            if section.compression_scheme == Section.ZLIB:
+                self.read_objects(zlib.decompress(section.objects_bytes))
+            elif section.compression_scheme == Section.UNCOMPRESSED:
+                self.read_objects(section.objects_bytes)
             else:
                 self.log.error("Unknown Compression Scheme.")
                 return            
-            chksum1 = zlib.adler32(section_header + data)
-            chksum2 = unpack("<I", self.file.read(4))[0]
-            if chksum1 != chksum2:
-                self.log.error(
-                    "Checksums do not match, file '%s' may be corrupt"%self.file.name
-                )
-            else:    
-                self.log.info("Checksum validated successfully")
-
-            self.sections[self.sect_cnt].append(len(self.objects))
+            # chksum1 = zlib.adler32(section_header + data)
+            # chksum2 = unpack("<I", self.file.read(4))[0]
+            # if chksum1 != chksum2:
+            #     self.log.error(
+            #         "Checksums do not match, file '%s' may be corrupt"%self.file.name
+            #     )
+            # else:    
+            #     self.log.info("Checksum validated successfully")
+            self.sections_lens[self.sect_cnt].append(len(self.objects))
             self.sect_cnt+=1
 
     def get_object_by_id(self, obj_id):
