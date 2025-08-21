@@ -18,14 +18,14 @@ class Image2D(Object3D):
 
     HAS_REFS = False
 
-    def __init__(self):
+    def __init__(self, format = LUMINANCE, mutable = False, w = 1, h = 1, palette = [], pixels = [127]):
         super().__init__()
-        self.image_format = None
-        self.is_mutable: bool = False
-        self.width: int = None
-        self.height: int = None
-        self.palette: list[int] = []
-        self.pixels: list[int] = []
+        self.image_format = format
+        self.is_mutable: bool = mutable
+        self.width: int = w
+        self.height: int = h
+        self.palette: list[int] = palette
+        self.pixels: list[int] = pixels
 
     def __str__(self):
         return obj2str(

@@ -76,6 +76,8 @@ class M3GReader:
         255: ExternalReference,
     }
 
+    _class2type = {cls: t for t, cls in _type2class.items()}
+
     log = None
 
     def __init__(self, path, log_level="WARNING"):
@@ -177,7 +179,12 @@ class M3GReader:
             if object_header == b"":
                 break
             object_type, size = unpack("<BI", object_header)
-            self.objects.append(self.parse_object(object_type, rdr.read(size), self.objects))
+            if object_type == self._class2type[ExternalReference]:
+                ext_ref = self.parse_object(object_type, rdr.read(size), self.objects)                
+                self.objects.append(self.parse_external_ref(ext_ref))
+            else:
+                self.objects.append(self.parse_object(object_type, rdr.read(size), self.objects))
+            
         rdr.close()
 
     def read_sections(self):
@@ -212,8 +219,33 @@ class M3GReader:
 
             self.sections[self.sect_cnt].append(len(self.objects))
             self.sect_cnt+=1
-            return
 
     def get_object_by_id(self, obj_id):
         """Returns an object based on id"""
         return self.objects[obj_id - 1]
+
+    def parse_external_ref(self, ext_ref: ExternalReference) -> Image2D:
+        try:
+            from PIL import Image
+            from os import path
+            path.join(path.dirname(self.file.name), ext_ref.uri)
+            img = Image.open(path)
+            mode_map = {
+                "L": Image2D.LUMINANCE,
+                "LA": Image2D.LUMINANCE_ALPHA,
+                "RGB": Image2D.RGB,
+                "RGBA": Image2D.RGBA,
+                "A": Image2D.ALPHA,
+            }
+            if img.mode not in mode_map:
+                raise ValueError(f"Unsupported image mode: {img.mode}")
+            image2d = Image2D()
+            image2d.image_format = mode_map[img.mode]
+            image2d.is_mutable = False
+            image2d.width, image2d.height = img.size
+            image2d.palette = [] 
+            image2d.pixels = list(img.tobytes())
+            return image2d
+        except Exception as e:
+            self.log.error("Failed loading external image: %s" %ext_ref.uri)
+            return Image2D()
