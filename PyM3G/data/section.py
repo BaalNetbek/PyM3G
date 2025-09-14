@@ -44,10 +44,10 @@ class Section:
                 )) 		
             objects_writer.write(tmp_object.getvalue()) # Data
         self.objects_bytes = objects_writer.getvalue()
-        self.uncompressed_size == self.getSize()
+        self.uncompressed_size = self.getSize()
         if self.compression_scheme == Section.ZLIB:
             self.objects_bytes = zlib.compress(self.objects_bytes)
-        self.total_section_size == self.getSize()
+        self.total_section_size = self.getSize()
         self.checksum = zlib.adler32(
             pack("<bII", self.compression_scheme, self.total_section_size, self.uncompressed_size) + self.objects_bytes
         )
