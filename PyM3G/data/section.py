@@ -22,18 +22,22 @@ class Section:
     def getCompressionScheme(self):
         return self.compression_scheme
     
+    def setCompressionScheme(self, scheme):
+        if scheme not in (Section.ZLIB, Section.UNCOMPRESSED):
+            raise ValueError("Error, set_objects(): invalid arg compression value: {}.".format(scheme))
+        self.compression_scheme = scheme
+    
     def getSize(self):
         return len(self.objects_bytes)+13
     
-    def set_objects(self, objects: list[Object], compression = None):
+    def getObjectsSize(self):
+        return len(self.objects_bytes)
+    
+    def updateFields(self):
         from PyM3G.reader import M3GReader
-        if compression not in (Section.ZLIB, Section.UNCOMPRESSED, None):
-            raise ValueError("Error, set_objects(): invalid arg compression value: {}.".format(compression))
-        if compression != None:
-            self.compression_scheme = compression
 
         objects_writer = BytesIO()
-        for o in objects:
+        for o in self.objects:
             # docs page 261
             tmp_object = BytesIO() 
             o.write(tmp_object)
@@ -44,13 +48,22 @@ class Section:
                 )) 		
             objects_writer.write(tmp_object.getvalue()) # Data
         self.objects_bytes = objects_writer.getvalue()
-        self.uncompressed_size = self.getSize()
+        self.uncompressed_size = self.getObjectsSize()
         if self.compression_scheme == Section.ZLIB:
             self.objects_bytes = zlib.compress(self.objects_bytes)
         self.total_section_size = self.getSize()
         self.checksum = zlib.adler32(
             pack("<bII", self.compression_scheme, self.total_section_size, self.uncompressed_size) + self.objects_bytes
         )
+
+    def set_objects(self, objects: list[Object]|Object, compression = UNCOMPRESSED):
+        from PyM3G.reader import M3GReader
+        self.setCompressionScheme(compression)
+        if type(objects) == list:
+            self.objects = objects
+        else:
+            self.objects = [objects]
+        self.updateFields()
 
     def read(self, file):
         header = file.read(9)
@@ -77,7 +90,9 @@ class Section:
         #     raise ValueError("Section checksum validation failed computed: %d, read: %d"%(chksum_verify, self.checksum))
         return self.objects_bytes
             
-    def write(self, file):
+    def write(self, file, update_refs = True):
+        if (update_refs):
+            self.updateFields()
         file.write(pack("<bII", self.compression_scheme, self.total_section_size, self.uncompressed_size))
         file.write(self.objects_bytes)
         file.write(pack("<I", self.checksum))
