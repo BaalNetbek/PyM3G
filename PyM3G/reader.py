@@ -43,7 +43,8 @@ _M3G_SIG = b"\xAB\x4A\x53\x52\x31\x38\x34\xBB\x0D\x0A\x1A\x0A"
 """«JSR184»"""
 _IM_M3G_SIG = b"\xAB\x49\x4D\x2D\x4D\x33\x47\xBB\x0D\x0A\x1A\x0A" 
 """«IM-M3G»"""
-
+_IM2M3G_SIG = b"\xAB\x49\x4D\x32\x4D\x33\x47\xBB\x0D\x0A\x1A\x0A" 
+"""«IM2M3G»"""
 
 class M3GReader:
     """
@@ -137,7 +138,10 @@ class M3GReader:
         if magic == _M3G_SIG:
             return True
         if magic == _IM_M3G_SIG:
-            self.log.info("IM-M3G file signature detected")
+            self.log.info("IronMonkey M3G signature detected")
+            return True
+        if magic == _IM2M3G_SIG:
+            self.log.info("IronMonkey M3G 2 signature detected")
             return True
         self.file.seek(-12,2)
         if self.file.read(12) == _M3G_SIG[::-1]:

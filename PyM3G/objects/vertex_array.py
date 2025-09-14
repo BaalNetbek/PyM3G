@@ -126,4 +126,23 @@ class VertexArray(Object3D):
                     "<" + str(self.component_count) + c_t,
                     *vtx
                 ))
-           
+        
+    def setAny(self, vals:list, comp_size: int, firstVtx: int = None, numVtx: int = None, scale = None):
+        def clamp(v):
+            max = (1 << (comp_size * 8 - 1)) - 1
+            min = -(1 << (comp_size * 8 - 1))
+            if v < min:
+                print("Warning: VertexArray.setAny(): clamping {} to {}".format(v, min))
+                v = min
+            if v > max:
+                print("Warning: VertexArray.setAny(): clamping {} to {}".format(v, max))
+                v = max
+            return round(v)
+            
+        self.component_size = comp_size
+        self.component_count = len(vals)
+        self.vertices = None
+        for i in range(0 if firstVtx == None else firstVtx,
+                       len(vals) if numVtx == None else numVtx,
+                       self.component_count):
+            self.vertices.append((clamp(v) for v in vals[i, i+self.component_count]))

@@ -12,6 +12,7 @@ class AnimationTrack(Object3D):
     Associates a KeyframeSequence with an AnimationController and an animatable
     property
     """
+    # Properties (page 32 in documentation)
     ALPHA = 256
     AMBIENT_COLOR = 257
     COLOR = 258
