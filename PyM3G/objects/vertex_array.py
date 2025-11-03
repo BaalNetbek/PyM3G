@@ -12,14 +12,14 @@ class VertexArray(Object3D):
     """
     HAS_REFS = False
 
-    def __init__(self, numVertices: int = None, numComponents: int = None, componentSize: int  = None, vertices: list[list[int]] = []):
+    def __init__(self, numVertices: int = None, numComponents: int = None, componentSize: int  = None, vertices: list = []):
         super().__init__()
         self.component_size: int = componentSize 
         """1-byte, 2-int16"""
         self.component_count: int = numComponents
         self.encoding: int = 0
         self.vertex_count: int = numVertices
-        self.vertices: list[list[int]] = vertices
+        self.vertices: list = vertices
 
     def __str__(self):
         return obj2str(
@@ -29,7 +29,7 @@ class VertexArray(Object3D):
                 ("Component Count", self.component_count),
                 ("Encoding", self.encoding),
                 ("Vertex Count", self.vertex_count),
-                ("Vertices", "Array of %d items"%len(self.vertices)),
+                ("Vertices", "Array of %d items"%len(self.vertices)), # ", ".join(str(v) for v in self.vertices
             ],
         ) + super().inherited_str()
     
@@ -54,13 +54,19 @@ class VertexArray(Object3D):
         # else:
         # log.error("Error reading vertex array")
         if self.encoding == 0:
-            for _ in range(self.vertex_count):
-                self.vertices.append(
-                    unpack(
-                        "<" + str(self.component_count) + c_t,
-                        reader.read(self.component_count * c_s),
+            print(f"r vcount: {self.vertex_count}")
+            self.vertices = unpack(
+                        "<" + str(self.component_count * self.vertex_count) + c_t,
+                        reader.read(self.component_count * self.vertex_count * c_s),
                     )
-                )
+            
+            # for _ in range(self.vertex_count):
+            #     self.vertices.append(
+            #         unpack(
+            #             "<" + str(self.component_count) + c_t,
+            #             reader.read(self.component_count * c_s),
+            #         )
+            #     )
         elif self.encoding == 1:
             delta = (0, 0, 0, 0)
             for _ in range(self.vertex_count):
@@ -79,7 +85,8 @@ class VertexArray(Object3D):
                         delta[2] + vtx[2],
                         delta[3] + vtx[3],
                     )
-                self.vertices.append(tvtx)
+                #self.vertices.append(tvtx)
+                self.vertices.extend(tvtx)
                 delta = tvtx
 
     def update_ref(self, objects):
@@ -87,11 +94,16 @@ class VertexArray(Object3D):
 
     def write(self, writer):
         super().write(writer)
-        vCount = len(self.vertices)
+        if type(self.vertices[0]) == list:
+            vert_element = 1
+        else:
+            vert_element = self.component_count
+
+        vCount = len(self.vertices)/vert_element
         if (vCount != self.vertex_count):
             if (vCount % 1 == 0):
                 print("Warning: VertexArray.write(): vertex_count != len(vertices). vertex_count updated.\n")
-                self.vertex_count = int(vCount)
+                self.vertex_count = vCount//vert_element
         writer.write(pack(
             "<3BH", 
             self.component_size, 
@@ -107,27 +119,58 @@ class VertexArray(Object3D):
             c_t = "f"
         # else:
         # log.error("Error writing vertex array")
+        
         if self.encoding == 0:
-            for vtx in self.vertices:
+            if type(self.vertices[0]) == list:
+                for vtx in self.vertices:
+                    writer.write(pack(
+                        "<" + str(self.component_count) + c_t,
+                        *vtx
+                    ))
+            else:
                 writer.write(pack(
-                    "<" + str(self.component_count) + c_t,
-                    *vtx
-                ))
+                        "<" + str(self.component_count*self.vertex_count) + c_t,
+                        *self.vertices
+                    ))
+                # for i in range(0, len(self.vertices), self.component_count):
+                #     writer.write(pack(
+                #         "<" + str(self.component_count) + c_t,
+                #         *self.vertices[i:i+self.component_count]
+                #     ))
         elif self.encoding == 1:
             def sub(a:list, b:list):
                 return tuple(x - y for x, y in zip(a, b))
             
-            for i in len(self.vertices):
-                if i == 0:
-                    vtx = self.vertices[i]
-                else:
-                    vtx = sub(self.vertices[i], self.vertices[i-1])
-                writer.write(pack(
-                    "<" + str(self.component_count) + c_t,
-                    *vtx
-                ))
-        
-    def setAny(self, vals:list, comp_size: int, firstVtx: int = None, numVtx: int = None, scale = None):
+
+
+            if type(self.vertices[0]) == list:
+                for i in range(len(self.vertices)):
+                    if i == 0:
+                        vtx = self.vertices[i]
+                    else:
+                        vtx = sub(self.vertices[i], self.vertices[i-1])
+                    writer.write(pack(
+                        "<" + str(self.component_count) + c_t,
+                        *vtx
+                    ))
+            else:
+                for i in range(0, len(self.vertices), self.component_count):
+                    if i == 0:
+                        vtx = self.vertices[i:i+self.component_count]
+                    else:
+                        vtx = sub(
+                            self.vertices[i:i+self.component_count],
+                            self.vertices[i-self.component_count:i]
+                        )
+                    writer.write(pack(
+                        "<" + str(self.component_count) + c_t,
+                        *self.vertices[i:i+self.component_count]
+                    ))
+
+    def setFlat(self, vals:list|tuple, comp_size: int, comp_cnt: int, firstVtx: int = None, numVtx: int = None, scale = 1):    
+        """
+        Initializes VertexArray from flat array.
+        """ 
         def clamp(v):
             max = (1 << (comp_size * 8 - 1)) - 1
             min = -(1 << (comp_size * 8 - 1))
@@ -138,11 +181,26 @@ class VertexArray(Object3D):
                 print("Warning: VertexArray.setAny(): clamping {} to {}".format(v, max))
                 v = max
             return round(v)
+        
+
+        if isinstance(vals[0], (list, tuple)):
+            flat = []
+            for v in vals:
+                flat.extend(v)
+        else:
+            flat = vals
             
         self.component_size = comp_size
-        self.component_count = len(vals)
-        self.vertices = None
-        for i in range(0 if firstVtx == None else firstVtx,
-                       len(vals) if numVtx == None else numVtx,
-                       self.component_count):
-            self.vertices.append((clamp(v) for v in vals[i, i+self.component_count]))
+        self.component_count = comp_cnt
+        self.vertices = []
+        self.vertex_count = len(flat)//comp_cnt
+        #self.vertices = vals
+        #return
+        start_vtx = 0 if firstVtx == None else firstVtx
+        stop_vtx = start_vtx + len(flat) if numVtx == None else numVtx
+        self.vertices = [*(clamp(v*scale) for v in flat[start_vtx * self.component_count:stop_vtx * self.component_count])]
+        # for i in range(start_vtx * self.component_count,
+        #                stop_vtx * self.component_count,
+        #                ):#self.component_count):
+        #     #print(vals[i:i+self.component_count])  
+        #     self.vertices += [*(clamp(v*scale) for v in vals[i:i+self.component_count])]
