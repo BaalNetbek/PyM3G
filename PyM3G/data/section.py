@@ -5,6 +5,9 @@ import zlib
 from io import BytesIO
 
 class Section:
+    """
+    Class for r/w .m3g file sections. Stores objects in binary format.
+    """
     _const2str = {
         0: "UNCOMPRESSED", 
         1: "ZLIB",    

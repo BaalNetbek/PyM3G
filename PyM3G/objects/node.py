@@ -4,6 +4,8 @@ from struct import unpack, pack
 from PyM3G.objects.transformable import Transformable
 from PyM3G.util import obj2str
 
+
+
 class Node(Transformable):
     """
     An abstract base class for all scene graph nodes

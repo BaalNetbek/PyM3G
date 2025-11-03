@@ -10,34 +10,8 @@ import logging
 from rich.logging import RichHandler
 
 from PyM3G.util import M3GStatus
-
 from PyM3G.data.section import Section
-
-from PyM3G.objects.animation_controller import AnimationController
-from PyM3G.objects.animation_track import AnimationTrack
-from PyM3G.objects.appearance import Appearance
-from PyM3G.objects.background import Background
-from PyM3G.objects.camera import Camera
-from PyM3G.objects.compositing_mode import CompositingMode
-from PyM3G.objects.external_reference import ExternalReference
-from PyM3G.objects.fog import Fog
-from PyM3G.objects.group import Group
-from PyM3G.objects.header import Header
-from PyM3G.objects.image2d import Image2D
-from PyM3G.objects.keyframe_sequence import KeyframeSequence
-from PyM3G.objects.light import Light
-from PyM3G.objects.material import Material
-from PyM3G.objects.mesh import Mesh
-from PyM3G.objects.morphing_mesh import MorphingMesh
-from PyM3G.objects.polygon_mode import PolygonMode
-from PyM3G.objects.skinned_mesh import SkinnedMesh
-from PyM3G.objects.sprite import Sprite
-from PyM3G.objects.texture2d import Texture2D
-from PyM3G.objects.triangle_strip_array import TriangleStripArray
-from PyM3G.objects.vertex_array import VertexArray
-from PyM3G.objects.vertex_buffer import VertexBuffer
-from PyM3G.objects.world import World
-from PyM3G.objects.submesh import Submesh
+from PyM3G.objects import *
 
 _M3G_SIG = b"\xAB\x4A\x53\x52\x31\x38\x34\xBB\x0D\x0A\x1A\x0A"
 """«JSR184»"""
@@ -138,10 +112,10 @@ class M3GReader:
         if magic == _M3G_SIG:
             return True
         if magic == _IM_M3G_SIG:
-            self.log.info("IronMonkey M3G signature detected")
+            self.log.error("IronMonkey M3G signature detected")
             return True
         if magic == _IM2M3G_SIG:
-            self.log.info("IronMonkey M3G 2 signature detected")
+            self.log.error("IronMonkey M3G 2 signature detected")
             return True
         self.file.seek(-12,2)
         if self.file.read(12) == _M3G_SIG[::-1]:

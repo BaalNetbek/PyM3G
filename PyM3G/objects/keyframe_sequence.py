@@ -31,7 +31,7 @@ class KeyframeSequence(Object3D):
         self.component_count: int  = None
         self.keyframe_count: int = None
         self.time: list[int] = []
-        self.vector_value: list = []
+        self.vector_value: list[list] = []
         self.vector_bias: list[float] = []
         self.vector_scale: list[float] = []
 

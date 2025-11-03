@@ -100,7 +100,7 @@ class VertexBuffer(Object3D):
 
     def write(self, writer):
         if (self.texcoord_array_count != len(self.tex_coords)):
-            print("Warning: VertexBuffer.write(): texcoord_array_count != len(tex_coords). texcoord_array_count updated.\n")
+            print("Warning: VertexBuffer.write(): texcoord_array_count != len(tex_coords). texcoord_array_count updated: {}->{}".format(self.texcoord_array_count, len(self.tex_coords)))
             self.texcoord_array_count = len(self.tex_coords)
         super().write(writer)
         writer.write(pack("<4B", *self.default_color.to_list(4)))
