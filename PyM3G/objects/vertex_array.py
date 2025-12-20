@@ -54,7 +54,7 @@ class VertexArray(Object3D):
         # else:
         # log.error("Error reading vertex array")
         if self.encoding == 0:
-            print(f"r vcount: {self.vertex_count}")
+            #print(f"r vcount: {self.vertex_count}")
             self.vertices = unpack(
                         "<" + str(self.component_count * self.vertex_count) + c_t,
                         reader.read(self.component_count * self.vertex_count * c_s),

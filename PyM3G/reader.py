@@ -233,7 +233,7 @@ class M3GReader:
             if img.mode not in mode_map:
                 raise ValueError(f"Unsupported image mode: {img.mode}")
             image2d = Image2D()
-            image2d.image_format = mode_map[img.mode]
+            image2d.format = mode_map[img.mode]
             image2d.is_mutable = False
             image2d.width, image2d.height = img.size
             image2d.palette = [] 

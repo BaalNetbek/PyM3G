@@ -26,7 +26,7 @@ class Header(Object):
                 ("Has external references", self.has_external_references),
                 ("Total file size", self.total_file_size),
                 ("Approximate content size", self.approximate_content_size),
-                ("Authoring field text", "'%s'" % self.authoring_field),
+                ("Authoring field text", "\n%s" % self.authoring_field),
             ],
         )
 

@@ -35,7 +35,7 @@ class Fog(Object3D):
         ) + super().inherited_str()
     def read(self, reader, objects=None):
         super().read(reader, objects)
-        self.color = Color(unpack("<3f", reader.read(12)))
+        self.color = Color(unpack("<3B", reader.read(3)))
         self.mode = unpack("<B", reader.read(1))[0]
         if self.mode == 80:
             self.density = unpack("<f", reader.read(4))[0]

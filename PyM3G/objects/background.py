@@ -16,7 +16,7 @@ class Background(Object3D):
 
     def __init__(self):
         super().__init__()
-        self.background_color = Color(0, 0, 0, 0)
+        self.background_color = Color([0, 0, 0, 0])
         self.background_image_idx = None
         self.background_image: Image2D = None
         self.background_image_mode_x = 32
@@ -47,7 +47,7 @@ class Background(Object3D):
 
     def read(self, reader, objects=None):
         super().read(reader, objects)
-        self.background_color = Color(unpack("<4f", reader.read(16)))
+        self.background_color = Color(unpack("<4B", reader.read(4)))
         (
             self.background_image_idx,
             self.background_image_mode_x,

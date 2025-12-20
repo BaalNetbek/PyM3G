@@ -18,9 +18,9 @@ class Image2D(Object3D):
 
     HAS_REFS = False
 
-    def __init__(self, format = LUMINANCE, mutable = False, w = 1, h = 1, palette = [], pixels = [127]):
+    def __init__(self, format = LUMINANCE, mutable = False, w = 1, h = 1, palette = [], pixels = []):
         super().__init__()
-        self.image_format = format
+        self.format = format
         self.is_mutable: bool = mutable
         self.width: int = w
         self.height: int = h
@@ -31,7 +31,7 @@ class Image2D(Object3D):
         return obj2str(
             "Image2D",
             [
-                ("Format", const2str(self.image_format) + " (%d)" % self.image_format),
+                ("Format", const2str(self.format) + " (%d)" % self.format),
                 ("Is Mutable", self.is_mutable),
                 ("Size", "{} x {}".format(self.width, self.height)),
                 ("Palette", "Array of {} items".format(len(self.palette))),
@@ -41,23 +41,23 @@ class Image2D(Object3D):
 
     def read(self, reader, objects=None):
         super().read(reader, objects)
-        (self.image_format, self.is_mutable, self.width, self.height) = unpack(
+        (self.format, self.is_mutable, self.width, self.height) = unpack(
             "<B?II", reader.read(10)
         )
         if not self.is_mutable:
             pal = unpack("<I", reader.read(4))[0]
-            for _ in range(pal):
-                self.palette.append(unpack("<B", reader.read(1))[0])
+            
+            self.palette=(unpack("<"+str(pal)+"B", reader.read(pal)))
             pxl = unpack("<I", reader.read(4))[0]
-            for _ in range(pxl):
-                self.pixels.append(unpack("<B", reader.read(1))[0])
+            self.pixels=(unpack("<"+str(pxl)+"B", reader.read(pxl)))
+            
 
     def update_ref(self, objects):
         super().update_ref(objects)
 
     def write(self, writer):
         super().write(writer)
-        writer.write(pack("<B?II", self.image_format, self.is_mutable, self.width, self.height))
+        writer.write(pack("<B?II", self.format, self.is_mutable, self.width, self.height))
         if not self.is_mutable:
             writer.write(pack("<I", len(self.palette)))
             for color in self.palette:
