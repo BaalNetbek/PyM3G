@@ -53,5 +53,14 @@ class Sprite(Node):
         
         deref_from_file(self, "image", Image2D, self.image_idx, objects)
         deref_from_file(self, "appearance", Appearance, self.appearance_idx, objects)
+        
     # TODO write, upadate_ref
+
+    def update_ref(self, objects):
+        raise(Exception("%s.update_ref() not implemented" % type(self).__name__))
+        super().update_ref(objects) 
+
+    def write(self, writer):
+        raise(Exception("%s.write() not implemented" % type(self).__name__))
+        super().write(writer)
     

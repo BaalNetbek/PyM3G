@@ -50,3 +50,11 @@ class Camera(Node):
             )
 
     # TODO write, upadate_ref
+
+    def update_ref(self, objects):
+        raise(Exception("%s.update_ref() not implemented" % type(self).__name__))
+        super().update_ref(objects) 
+
+    def write(self, writer):
+        raise(Exception("%s.write() not implemented" % type(self).__name__))
+        super().write(writer)

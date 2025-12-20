@@ -1,6 +1,6 @@
 """Compositing Mode Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.object3d import Object3D
 
@@ -54,4 +54,21 @@ class CompositingMode(Object3D):
             self.depth_offset_units,
         ) = unpack("<4?BBff", reader.read(14))
 
-    # TODO write, upadate_ref
+    def update_ref(self, objects):
+        super().update_ref(objects)    
+
+    def write(self, writer):
+        super().write(writer)
+        writer.write(
+            pack(
+                "<4?BBff",
+                self.depth_test_enabled,
+                self.depth_write_enabled,
+                self.color_write_enabled,
+                self.alpha_write_enabled,
+                self.blending,
+                self.alpha_threshold,
+                self.depth_offset_factor,
+                self.depth_offset_units,
+            )
+        )

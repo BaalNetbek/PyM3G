@@ -43,3 +43,11 @@ class Fog(Object3D):
             (self.near, self.far) = unpack("<2f", reader.read(8))
 
     # TODO write, upadate_ref
+
+    def update_ref(self, objects):
+        raise(Exception("%s.update_ref() not implemented" % type(self).__name__))
+        super().update_ref(objects) 
+
+    def write(self, writer):
+        raise(Exception("%s.write() not implemented" % type(self).__name__))
+        super().write(writer)

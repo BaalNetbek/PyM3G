@@ -33,5 +33,12 @@ class World(Group):
         deref_from_file(self, "active_camera", Camera, self.active_camera_idx, objects)
         deref_from_file(self, "background", Background, self.background_idx, objects)
 
-    # TODO  upadate_ref
-    # def write(self, writer):
+    # TODO write, upadate_ref
+
+    def update_ref(self, objects):
+        raise(Exception("%s.update_ref() not implemented" % type(self).__name__))
+        super().update_ref(objects) 
+
+    def write(self, writer):
+        raise(Exception("%s.write() not implemented" % type(self).__name__))
+        super().write(writer)
