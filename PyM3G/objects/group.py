@@ -21,8 +21,8 @@ class Group(Node):
     
     def inherited_str(self):
         if self.children_idx != []:
-            return "From: " + Group.__str__(self)
-        return "From: Group:\n\tdefault values"
+            return "From " + Group.__str__(self)
+        return "From Group:\n\tdefault values"
 
     def read(self, reader, objects=None):
         super().read(reader, objects)

@@ -31,8 +31,8 @@ class Object3D(Object):
         if (self.user_id != 0
             or self.animation_tracks_idx != []
             or self.user_parameters != {}):
-            return "From: " + Object3D.__str__(self)
-        return "From: Object3D: default values\n"
+            return "From " + Object3D.__str__(self)
+        return "From Object3D: default values\n"
 
     def read(self, reader, objects=None):
         """Read object data from an input stream"""

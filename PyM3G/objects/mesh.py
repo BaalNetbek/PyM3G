@@ -41,8 +41,8 @@ class Mesh(Node):
             or self.submesh_count != None
             or self.index_buffer_idx != []
             or self.appearance_idx != []):
-                return "From: " + Mesh.__str__(self)
-        return "From: Mesh:\n\tdefault values"
+                return "From " + Mesh.__str__(self)
+        return "From Mesh:\n\tdefault values"
 
     def read(self, reader, objects=None):
         super().read(reader, objects)

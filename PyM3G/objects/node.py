@@ -51,8 +51,8 @@ class Node(Transformable):
             or self.y_target != None
             or self.z_reference != None
             or self.y_reference != None):
-                return "From: " + Node.__str__(self)
-        return "From: Node:\n\tdefault values"
+                return "From " + Node.__str__(self)
+        return "From Node:\n\tdefault values"
 
     def read(self, reader, objects=None):
         super().read(reader, objects)

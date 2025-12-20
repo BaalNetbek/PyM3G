@@ -47,8 +47,8 @@ class Transformable(Object3D):
             or self.has_general_transform != None
             or self.matrix != Matrix.identity()
             ):
-                return "From: " + Transformable.__str__(self)
-        return "From: Transformable: default values"    
+                return "From " + Transformable.__str__(self)
+        return "From Transformable: default values"    
     
     def read(self, reader, objects=None):
         super().read(reader, objects)
