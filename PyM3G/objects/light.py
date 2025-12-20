@@ -50,7 +50,7 @@ class Light(Node):
             self.attenuation_linear,
             self.attenuation_quadratic,
         ) = unpack("<3f", reader.read(12))
-        self.color = Color(unpack("<3B", reader.read(3)))
+        self.color = Color(unpack("<4B", reader.read(4)))
         (self.intensity, self.spot_angle, self.spot_exponent) = unpack(
             "<3f", reader.read(12)
         )
@@ -65,7 +65,7 @@ class Light(Node):
             self.attenuation_linear,
             self.attenuation_quadratic,
         ))
-        writer.write(pack("<3B", *self.color.to_list(3)))
+        writer.write(pack("<4B", *self.color.to_list(4)))
         writer.write(pack(
             "<3f",
             self.intensity,

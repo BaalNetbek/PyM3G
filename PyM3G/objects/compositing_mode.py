@@ -15,6 +15,8 @@ class CompositingMode(Object3D):
     MODULATE_X2 = 67
     REPLACE = 68
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.depth_test_enabled: bool = True

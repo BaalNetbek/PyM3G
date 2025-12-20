@@ -1,6 +1,6 @@
 """World Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, deref_from_file
 from PyM3G.objects.group import Group
 from PyM3G.objects.background import Background
@@ -33,12 +33,19 @@ class World(Group):
         deref_from_file(self, "active_camera", Camera, self.active_camera_idx, objects)
         deref_from_file(self, "background", Background, self.background_idx, objects)
 
-    # TODO write, upadate_ref
+    # TODO upadate_ref
 
     def update_ref(self, objects):
         raise(Exception("%s.update_ref() not implemented" % type(self).__name__))
         super().update_ref(objects) 
 
+
     def write(self, writer):
-        raise(Exception("%s.write() not implemented" % type(self).__name__))
         super().write(writer)
+        writer.write(
+            pack(
+                "<II",
+                self.active_camera_idx,
+                self.background_idx
+            )
+        )
