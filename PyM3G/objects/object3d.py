@@ -57,7 +57,7 @@ class Object3D(Object):
         for i, o in enumerate(objects):
             if o == self:
                 this_idx = i+1
-            for at in self.animation_tracks_idx:
+            for at in self.animation_tracks:
                 if o == at:
                     self.animation_tracks_idx.append(i+1)
                     child_idx.append(i+1)   
