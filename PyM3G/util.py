@@ -1,8 +1,5 @@
 """Utility functions"""
 
-from enum import Enum, auto
-
-
 _constants = {
     2: "ANTIALIAS",
     4: "DITHER",
@@ -86,15 +83,6 @@ _constants = {
     8192: "SPECULAR",
 }
 
-
-class M3GStatus(Enum):
-    """Enum for different Reader and Writer status codes"""
-
-    SUCCESS = auto()
-    FAILED = auto()
-    CHECKSUM_FAIL = auto()
-
-
 def obj2str(obtype, values):
     """Build a string representation of an object"""
     outstr = obtype+":\n"
@@ -142,3 +130,24 @@ def verify_ref(this: object, this_idx: int, child_idx: list[int]):
     for ci in child_idx:
             if ci >= this_idx:
                 raise(IndexError("{}.update_ref() ERROR: Child of object with idx {} has child {} serialized after itself.".format(type(this).__name__, this_idx, ci)))
+            
+def fishlabs_deobfuscate(data):
+    """
+    From j2me-preservation/MascotCapsule
+    https://github.com/j2me-preservation/MascotCapsule/blob/master/tools/fishlabs_obfuscation.py
+    """
+    length = len(data)
+    data = bytearray(data)
+    if length < 100:
+        var5 = 10 + length % 10
+    elif length < 200:
+        var5 = 50 + length % 20
+    elif length < 300:
+        var5 = 80 + length % 20
+    else:
+        var5 = 100 + length % 50
+    for i in range(var5):
+        var7 = data[i]
+        data[i] = data[length - i - 1]
+        data[length - i - 1] = var7
+    return bytes(data)

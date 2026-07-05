@@ -5,11 +5,9 @@ Module for reading JSR 184 m3g files
 from io import BytesIO
 from struct import unpack, pack
 import zlib
-
 import logging
-from rich.logging import RichHandler
 
-from PyM3G.util import M3GStatus
+from PyM3G.util import fishlabs_deobfuscate
 from PyM3G.data.section import Section
 from PyM3G.objects import *
 
@@ -20,6 +18,10 @@ _IM_M3G_SIG = b"\xAB\x49\x4D\x2D\x4D\x33\x47\xBB\x0D\x0A\x1A\x0A"
 _IM2M3G_SIG = b"\xAB\x49\x4D\x32\x4D\x33\x47\xBB\x0D\x0A\x1A\x0A" 
 """«IM2M3G»"""
 
+_BAD_SIG = 0
+_M3G = 1 
+_IM_M3G = 2 
+_IM2M3G = 3
 class M3GReader:
     """
     Reader for JSR 184 M3G data files
@@ -57,17 +59,19 @@ class M3GReader:
 
     log = None
 
-    def __init__(self, path, log_level="WARNING"):
+
+
+    def __init__(self, path, log_handler = logging.StreamHandler(), log_level=logging.ERROR):
         logging.basicConfig(
-            level="NOTSET",
+            level=logging.NOTSET,
             format="%(message)s",
             datefmt="[%X]",
-            handlers=[RichHandler()],
+            handlers=[log_handler],
         )
         self.log = logging.getLogger("m3g")
         self.log.setLevel(log_level)
 
-        self.status = M3GStatus.FAILED
+        # self.status = M3GStatus.FAILED
         self.objects = []
         self.sections_lens = []
         self.sect_cnt = 0
@@ -76,57 +80,36 @@ class M3GReader:
             self.log.error("Could not open file %s", path)
             return
         self.version = self.verify_signature()
-        if self.version == False:
+        if self.version == _BAD_SIG:
             self.log.error("Invalid M3G file %s", path)
             self.file.close()
             return
         self.read_sections()
         self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections_lens]) + " - " + str(self.sections_lens[self.sect_cnt-1][1]) + " objects total.")
         self.file.close()
-        self.status = M3GStatus.SUCCESS
-
-    def fishlabs_deobfuscate(self, data):
-        """
-        From j2me-preservation/MascotCapsule
-        https://github.com/j2me-preservation/MascotCapsule/blob/master/tools/fishlabs_obfuscation.py
-        """
-        length = len(data)
-        data = bytearray(data)
-        if length < 100:
-            var5 = 10 + length % 10
-        elif length < 200:
-            var5 = 50 + length % 20
-        elif length < 300:
-            var5 = 80 + length % 20
-        else:
-            var5 = 100 + length % 50
-        for i in range(var5):
-            var7 = data[i]
-            data[i] = data[length - i - 1]
-            data[length - i - 1] = var7
-        return bytes(data)
+        # self.status = M3GStatus.SUCCESS
 
     def verify_signature(self):
         """Verify header bytes to make sure this is a valid m3g file"""
         magic = self.file.read(12)
         if magic == _M3G_SIG:
-            return True
+            return _M3G
         if magic == _IM_M3G_SIG:
             self.log.error("IronMonkey M3G signature detected")
-            return True
+            return _IM_M3G
         if magic == _IM2M3G_SIG:
             self.log.error("IronMonkey M3G 2 signature detected")
-            return True
+            return _IM2M3G
         self.file.seek(-12,2)
         if self.file.read(12) == _M3G_SIG[::-1]:
             from io import BytesIO
             self.file.seek(0)
             data = self.file.read()
-            self.file = BytesIO(self.fishlabs_deobfuscate(data))
+            self.file = BytesIO(fishlabs_deobfuscate(data))
             if self.file.read(12) == _M3G_SIG:
                 self.log.info("Fishlabs obfuscation detected")
-                return True
-        return False
+                return _M3G
+        return _BAD_SIG
 
     def parse_object(self, objtype, data, before_objects = None):
         """Parse an object out of a binary data chunk"""
@@ -171,9 +154,7 @@ class M3GReader:
         """Reads all sections from a file"""
         while True:
             section = Section(self.log)
-            # section_header = self.file.read(9)
-            # if section_header == b"":
-            #     break
+
             if section.read(self.file) == b'':
                 if self.objects[0].total_file_size == section.file_size:
                     self.log.info(
@@ -188,13 +169,6 @@ class M3GReader:
                 break
             self.sections_lens.append([len(self.objects)])
 
-            # self.log.info("Section @ %d", self.file.tell())
-            # compression, total_len, uncomp = unpack("<BII", section_header)
-            # self.log.info("Compression: %s", compression)
-            # self.log.info("Total length: %d", total_len)
-            # self.log.info("Uncompressed length: %d", uncomp)
-            # section_length = total_len - 13
-            # data = self.file.read(section_length)
             if section.compression_scheme == Section.ZLIB:
                 self.read_objects(zlib.decompress(section.objects_bytes))
             elif section.compression_scheme == Section.UNCOMPRESSED:
@@ -202,19 +176,12 @@ class M3GReader:
             else:
                 self.log.error("Unknown Compression Scheme.")
                 return            
-            # chksum1 = zlib.adler32(section_header + data)
-            # chksum2 = unpack("<I", self.file.read(4))[0]
-            # if chksum1 != chksum2:
-            #     self.log.error(
-            #         "Checksums do not match, file '%s' may be corrupt"%self.file.name
-            #     )
-            # else:    
-            #     self.log.info("Checksum validated successfully")
+
             self.sections_lens[self.sect_cnt].append(len(self.objects))
             self.sect_cnt+=1
 
-    def get_object_by_id(self, obj_id):
-        """Returns an object based on id"""
+    def get_object(self, obj_id):
+        """Returns an object by id"""
         return self.objects[obj_id - 1]
 
     def parse_external_ref(self, ext_ref: ExternalReference) -> Image2D:
