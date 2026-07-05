@@ -71,10 +71,10 @@ class M3GReader:
         self.log = logging.getLogger("m3g")
         self.log.setLevel(log_level)
 
-        # self.status = M3GStatus.FAILED
         self.objects = []
         self.sections_lens = []
         self.sect_cnt = 0
+        
         self.file = open(path, "rb")
         if not self.file:
             self.log.error("Could not open file %s", path)
@@ -87,7 +87,6 @@ class M3GReader:
         self.read_sections()
         self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections_lens]) + " - " + str(self.sections_lens[self.sect_cnt-1][1]) + " objects total.")
         self.file.close()
-        # self.status = M3GStatus.SUCCESS
 
     def verify_signature(self):
         """Verify header bytes to make sure this is a valid m3g file"""
@@ -143,9 +142,10 @@ class M3GReader:
                 break
             object_type, size = unpack("<BI", object_header)
             if object_type == self._class2type[ExternalReference]:
-                ext_ref = self.parse_object(object_type, rdr.read(size), self.objects)                
+                ext_ref = self.parse_object(object_type, rdr.read(size), self.objects)
                 self.objects.append(self.parse_external_ref(ext_ref))
             else:
+                # print(hex(rdr.tell()), self._type2class[object_type].__name__)
                 self.objects.append(self.parse_object(object_type, rdr.read(size), self.objects))
             
         rdr.close()
