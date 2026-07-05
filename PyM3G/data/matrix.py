@@ -1,7 +1,10 @@
 class Matrix:
     def __init__(self, elements = None):
-        if len(elements) == 16:
-            self.elements = elements
+        if len(elements) == 16 and type(elements) in (list, tuple):
+            self.elements = list(elements)
+        elif (type(elements) == type(Matrix)):
+            # it's ugly but not important
+            self.elements = list(elements.elements)
         elif elements is None:
             self = Matrix.identity()
         else:

@@ -105,7 +105,9 @@ class KeyframeSequence(Object3D):
                         reader.read(2 * self.component_count),
                     )
                 )
-    #TODO upadate_ref
+
+    def update_ref(self, objects):
+        super().update_ref(objects)
 
     def write(self, writer):
         super().write(writer)

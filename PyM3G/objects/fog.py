@@ -42,10 +42,9 @@ class Fog(Object3D):
         elif self.mode == 81:
             (self.near, self.far) = unpack("<2f", reader.read(8))
 
-    # TODO write, upadate_ref
+    # TODO write
 
     def update_ref(self, objects):
-        raise(Exception("%s.update_ref() not implemented" % type(self).__name__))
         super().update_ref(objects) 
 
     def write(self, writer):

@@ -55,7 +55,8 @@ class Light(Node):
             "<3f", reader.read(12)
         )
 
-    #TODO upadate_ref
+    def update_ref(self, objects):
+        super().update_ref(objects)
 
     def write(self, writer):
         super().write(writer)

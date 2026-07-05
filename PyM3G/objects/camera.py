@@ -1,6 +1,6 @@
 """Camera Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.node import Node
 from PyM3G.data.matrix import Matrix
@@ -49,12 +49,20 @@ class Camera(Node):
                 "<4f", reader.read(16)
             )
 
-    # TODO write, upadate_ref
-
     def update_ref(self, objects):
-        raise(Exception("%s.update_ref() not implemented" % type(self).__name__))
         super().update_ref(objects) 
 
     def write(self, writer):
-        raise(Exception("%s.write() not implemented" % type(self).__name__))
         super().write(writer)
+        writer.write(pack("B", self.projection_type))
+        if self.projection_type == Camera.GENERIC:
+            writer.write(pack(
+                "<16f", 
+                *self.projection_matrix.elements))
+        else:
+            writer.write(pack(
+                "<4f", 
+                self.fovy, 
+                self.aspect_ratio,
+                self.near,
+                self.far))
