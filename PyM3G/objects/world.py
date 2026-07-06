@@ -55,8 +55,7 @@ class World(Group):
     def write(self, writer):
         super().write(writer)
         writer.write(
-            pack(
-                "<II",
+            pack("<II",
                 self.active_camera_idx,
                 self.background_idx
             )

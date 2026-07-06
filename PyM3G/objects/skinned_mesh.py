@@ -103,11 +103,18 @@ class SkinnedMesh(Mesh):
             
         #raise(Exception("%s.write() not implemented" % type(self).__name__))
         super().write(writer)
-        writer.write(pack("<I", self.skeleton_idx))
-        writer.write(pack("<I", self.transform_reference_count))
+        writer.write(pack("<II", 
+                self.skeleton_idx,
+                self.transform_reference_count
+            )
+        )
         for i in range(self.transform_reference_count):
-            writer.write(pack("<I", self.transform_nodes_idx[i]))
-            writer.write(pack("<I", self.first_vertex[i]))
-            writer.write(pack("<I", self.vertex_count[i]))
-            writer.write(pack("<i", self.weight[i]))
+            writer.write(
+                pack("<IIII", 
+                    self.transform_nodes_idx[i],
+                    self.first_vertex[i],
+                    self.vertex_count[i],
+                    self.weight[i]
+                )
+            )
       
