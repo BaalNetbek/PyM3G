@@ -1,6 +1,6 @@
 """Fog Class"""
 
-from struct import unpack
+from struct import unpack, pack
 from PyM3G.util import obj2str, const2str
 from PyM3G.objects.object3d import Object3D
 from PyM3G.data.color import Color
@@ -37,16 +37,19 @@ class Fog(Object3D):
         super().read(reader, objects)
         self.color = Color(unpack("<3B", reader.read(3)))
         self.mode = unpack("<B", reader.read(1))[0]
-        if self.mode == 80:
+        if self.mode == Fog.EXPONENTIAL:
             self.density = unpack("<f", reader.read(4))[0]
-        elif self.mode == 81:
+        elif self.mode ==  Fog.LINEAR:
             (self.near, self.far) = unpack("<2f", reader.read(8))
-
-    # TODO write
 
     def update_ref(self, objects):
         super().update_ref(objects) 
 
     def write(self, writer):
-        raise(Exception("%s.write() not implemented" % type(self).__name__))
         super().write(writer)
+        if self.mode == Fog.EXPONENTIAL:
+            writer.write(pack("<f", self.density))
+        elif self.mode == Fog.LINEAR:
+            writer.write(pack("<2f", self.near, self.far))
+        else:
+            raise(ValueError("{}.write() unexpected mode {}".format(type(self).__name__, self.mode)))

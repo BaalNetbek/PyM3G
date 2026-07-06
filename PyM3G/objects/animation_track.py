@@ -63,7 +63,24 @@ class AnimationTrack(Object3D):
         
         deref_from_file(self, "keyframe_sequence", KeyframeSequence, self.keyframe_sequence_idx, objects)
         deref_from_file(self, "animation_controller", AnimationController, self.animation_controller_idx, objects)
-    #TODO upadate_ref
+  
+    def update_ref(self, objects):
+        super().update_ref(objects) 
+        self.keyframe_sequence_idx = 0
+        self.animation_controller_idx = 0
+        child_idx = []
+        this_idx = 0
+        for i, o in enumerate(objects):
+            if o == self:
+                this_idx = i+1
+            if o == self.keyframe_sequence:
+                self.keyframe_sequence_idx = i+1
+                child_idx.append(i+1)
+            if o == self.animation_controller:
+                self.animation_controller_idx = i+1
+                child_idx.append(i+1)
+
+        verify_ref(self, this_idx, child_idx)
 
     def write(self, writer):
         super().write(writer)
