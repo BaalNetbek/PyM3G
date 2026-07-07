@@ -21,6 +21,7 @@ class Section:
         self.objects_bytes: bytes = b''
         self.checksum: int = 0
         self.log = logger
+        self.objects_offset: int = None
 
     def getCompressionScheme(self):
         return self.compression_scheme
@@ -72,16 +73,16 @@ class Section:
         header = file.read(9)
         if header == b"":
             self.file_size = file.tell()
-            self.log_info("Reached end of file @ %d", self.file_size)
+            self.log_info("Reached end of file @%s", hex(self.file_size))
             return b""
-        self.log_info("Section @ %d", file.tell() - 9)
+        self.log_info("Section @%s", hex(file.tell() - 9))
 
         self.compression_scheme, self.total_section_size, self.uncompressed_size = unpack("<BII", header)
 
         self.log_info("Compression: %s", Section._const2str[self.compression_scheme])
-        self.log_info("Total length: %d", self.total_section_size)
-        self.log_info("Uncompressed length: %d", self.uncompressed_size)
-
+        self.log_info("Total length: %s", hex(self.total_section_size))
+        self.log_info("Uncompressed length: %s", hex(self.uncompressed_size))
+        self.objects_offset = file.tell()
         self.objects_bytes = file.read(self.total_section_size-13)
         self.checksum = unpack("<I", file.read(4))[0]
         chksum_verify = zlib.adler32(header + self.objects_bytes)

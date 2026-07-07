@@ -57,38 +57,33 @@ class M3GReader:
 
     _class2type = {cls: t for t, cls in _type2class.items()}
 
-    log = None
+    def __init__(self, path="", log_level=logging.ERROR):
 
-
-
-    def __init__(self, path, log_handler = logging.StreamHandler(), log_level=logging.ERROR):
-        logging.basicConfig(
-            level=logging.NOTSET,
-            format="%(message)s",
-            datefmt="[%X]",
-            handlers=[log_handler],
-        )
         self.log = logging.getLogger("m3g")
         self.log.setLevel(log_level)
 
-        self.objects = []
+        self.objects = [] # todo make it [][] and remove sections lens
         self.sections_lens = []
         self.sect_cnt = 0
         
-        self.file = open(path, "rb")
-        if not self.file:
-            self.log.error("Could not open file %s", path)
-            return
-        self.version = self.verify_signature()
-        if self.version == _BAD_SIG:
-            self.log.error("Invalid M3G file %s", path)
-            self.file.close()
-            return
-        self.read_sections()
-        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections_lens]) + " - " + str(self.sections_lens[self.sect_cnt-1][1]) + " objects total.")
-        self.file.close()
+        if path != "":
+            self.read(path)
 
-    def verify_signature(self):
+    def read(self, path):
+        with open(path, "rb") as file:
+            self.file = file        
+            if not self.file:
+                self.log.error("Could not open file %s", path)
+                return
+            self.version = self._verify_signature()
+            if self.version == _BAD_SIG:
+                self.log.error("Invalid M3G file %s", path)
+                return
+            self.read_sections()
+
+        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections_lens]) + " - " + str(self.sections_lens[self.sect_cnt-1][1]) + " objects total.")
+
+    def _verify_signature(self):
         """Verify header bytes to make sure this is a valid m3g file"""
         magic = self.file.read(12)
         if magic == _M3G_SIG:
@@ -110,21 +105,34 @@ class M3GReader:
                 return _M3G
         return _BAD_SIG
 
-    def parse_object(self, objtype, data, before_objects = None):
-        """Parse an object out of a binary data chunk"""
+    def parse_object(self, objtype, data, before_objects = None, offset = None):
+        """Parse an object out of a uncompressed binary data chunk"""
         rdr = BytesIO(data)
         if objtype in self._type2class:
             obj = self._type2class.get(objtype)()
         else:
             obj = None
-            self.log.error("Invalid object type(%d) found", objtype)
+            if offset == None:
+                self.log.error("Invalid object type(%d) found", objtype)
+            else:
+                self.log.error("Invalid object type(%d) found @%s", objtype, hex(offset))
             rdr.close()
             return None
-        self.log.info(
-            "Found [bold cyan]%s[/] object",
-            obj.__class__.__name__,
-            extra={"markup": True},
-        )
+        
+        if offset == None:
+            self.log.info(
+                "Found [bold cyan]%s[/] object",
+                obj.__class__.__name__, 
+                extra={"markup": True},
+            )
+        else:
+            self.log.info(
+                "Found [bold cyan]%s[/] object @%s",
+                obj.__class__.__name__, hex(offset),
+                extra={"markup": True},
+                
+            )
+
         obj.read(rdr, before_objects)
 
         bytes_unread = len(rdr.read())
@@ -133,20 +141,23 @@ class M3GReader:
         rdr.close()
         return obj
 
-    def read_objects(self, data):
+    def read_objects(self, data, offset = None):
         """Reads all objects from a section"""
         rdr = BytesIO(data)
         while True:
+            if offset == None:
+                obj_off = None
+            else:
+                obj_off = offset + rdr.tell()
             object_header = rdr.read(5)
             if object_header == b"":
                 break
             object_type, size = unpack("<BI", object_header)
             if object_type == self._class2type[ExternalReference]:
-                ext_ref = self.parse_object(object_type, rdr.read(size), self.objects)
+                ext_ref = self.parse_object(object_type, rdr.read(size), self.objects, obj_off)
                 self.objects.append(self.parse_external_ref(ext_ref))
             else:
-                # print(hex(rdr.tell()), self._type2class[object_type].__name__)
-                self.objects.append(self.parse_object(object_type, rdr.read(size), self.objects))
+                self.objects.append(self.parse_object(object_type, rdr.read(size), self.objects, obj_off))
             
         rdr.close()
 
@@ -163,8 +174,8 @@ class M3GReader:
                     )
                 else:
                     self.log.error(
-                        "File size (%d Bytes) doesn't match size declared in [bold cyan]Header[/]: %d Bytes",
-                        section.file_size, self.objects[0].total_file_size,extra={"markup": True}
+                        "File size (%s Bytes) doesn't match size declared in [bold cyan]Header[/]: %s Bytes",
+                        hex(section.file_size), hex(self.objects[0].total_file_size), extra={"markup": True}
                     )
                 break
             self.sections_lens.append([len(self.objects)])
@@ -172,7 +183,7 @@ class M3GReader:
             if section.compression_scheme == Section.ZLIB:
                 self.read_objects(zlib.decompress(section.objects_bytes))
             elif section.compression_scheme == Section.UNCOMPRESSED:
-                self.read_objects(section.objects_bytes)
+                self.read_objects(section.objects_bytes, section.objects_offset)
             else:
                 self.log.error("Unknown Compression Scheme.")
                 return            

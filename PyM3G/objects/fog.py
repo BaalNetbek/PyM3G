@@ -14,6 +14,8 @@ class Fog(Object3D):
     EXPONENTIAL = 80
     LINEAR = 81
 
+    HAS_REFS = False
+
     def __init__(self):
         super().__init__()
         self.color = Color([0,0,0])
@@ -33,6 +35,7 @@ class Fog(Object3D):
                 ("Far", self.far),
             ],
         ) + super().inherited_str()
+    
     def read(self, reader, objects=None):
         super().read(reader, objects)
         self.color = Color(unpack("<3B", reader.read(3)))
