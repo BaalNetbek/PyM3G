@@ -6,7 +6,7 @@ from sys import argv
 import logging
 from rich import console
 from rich.logging import RichHandler
-from PyM3G.file import M3GFile
+from pym3g.file import M3GFile
 
 logging.basicConfig(
     level=logging.NOTSET,

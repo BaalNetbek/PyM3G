@@ -1,9 +1,9 @@
 """Morphing Mesh Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file, verify_ref
-from PyM3G.objects.mesh import Mesh
-from PyM3G.objects.vertex_buffer import VertexBuffer
+from pym3g.util import obj2str, deref_from_file, verify_ref
+from pym3g.objects.mesh import Mesh
+from pym3g.objects.vertex_buffer import VertexBuffer
 
 
 class MorphingMesh(Mesh):

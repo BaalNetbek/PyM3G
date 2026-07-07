@@ -1,8 +1,8 @@
 """Node Class"""
 
 from struct import unpack, pack
-from PyM3G.objects.transformable import Transformable
-from PyM3G.util import obj2str
+from pym3g.objects.transformable import Transformable
+from pym3g.util import obj2str
 
 
 

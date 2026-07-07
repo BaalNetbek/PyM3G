@@ -1,6 +1,6 @@
 from struct import pack, unpack
-from PyM3G.objects import *
-from PyM3G.objects.object import ObjectM3G
+from pym3g.objects import *
+from pym3g.objects.object import ObjectM3G
 
 import zlib
 from io import BytesIO

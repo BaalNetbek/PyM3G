@@ -1,9 +1,9 @@
 """Material Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str
-from PyM3G.data.color import Color
-from PyM3G.objects.object3d import Object3D
+from pym3g.util import obj2str
+from pym3g.data.color import Color
+from pym3g.objects.object3d import Object3D
 
 
 class Material(Object3D):

@@ -1,8 +1,8 @@
 """Header Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str
-from PyM3G.objects.object import ObjectM3G
+from pym3g.util import obj2str
+from pym3g.objects.object import ObjectM3G
 
 class Header(ObjectM3G):
     """

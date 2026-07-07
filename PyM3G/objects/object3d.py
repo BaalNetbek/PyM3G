@@ -1,8 +1,8 @@
 """Object3D Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file, verify_ref
-from PyM3G.objects.object import ObjectM3G
+from pym3g.util import obj2str, deref_from_file, verify_ref
+from pym3g.objects.object import ObjectM3G
 
 class Object3D(ObjectM3G):
     """
@@ -47,7 +47,7 @@ class Object3D(ObjectM3G):
                 self.user_parameters[pid] = reader.read(psz)
         
         # importing here to evade import loop
-        from PyM3G.objects.animation_track import AnimationTrack 
+        from pym3g.objects.animation_track import AnimationTrack 
         deref_from_file(self, "animation_tracks", AnimationTrack, self.animation_tracks_idx, objects)
 
     def update_ref(self, objects):

@@ -1,8 +1,8 @@
 """Group Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file, verify_ref
-from PyM3G.objects.node import Node
+from pym3g.util import obj2str, deref_from_file, verify_ref
+from pym3g.objects.node import Node
 
 
 class Group(Node):

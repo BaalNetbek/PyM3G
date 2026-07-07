@@ -1,10 +1,10 @@
 """Background Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, const2str, deref_from_file, verify_ref
-from PyM3G.objects.object3d import Object3D
-from PyM3G.objects.image2d import Image2D
-from PyM3G.data.color import Color
+from pym3g.util import obj2str, const2str, deref_from_file, verify_ref
+from pym3g.objects.object3d import Object3D
+from pym3g.objects.image2d import Image2D
+from pym3g.data.color import Color
 
 
 class Background(Object3D):

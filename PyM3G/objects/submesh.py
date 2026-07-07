@@ -1,10 +1,10 @@
 """Submesh Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file, verify_ref
-from PyM3G.objects.object3d import Object3D
-from PyM3G.objects.appearance import Appearance 
-from PyM3G.objects.triangle_strip_array import TriangleStripArray 
+from pym3g.util import obj2str, deref_from_file, verify_ref
+from pym3g.objects.object3d import Object3D
+from pym3g.objects.appearance import Appearance 
+from pym3g.objects.triangle_strip_array import TriangleStripArray 
 
 class Submesh(Object3D):
     """

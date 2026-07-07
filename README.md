@@ -1,4 +1,4 @@
-# PyM3G
+# pym3g
 
 A small library to parse JSR 184 format .m3g files. These files are mostly used in J2ME mobile games.
 
@@ -8,7 +8,7 @@ A small library to parse JSR 184 format .m3g files. These files are mostly used 
 Included is a small demo utility to print out all the properties of a .m3g file when the module is called directly:
 
 ```python
-$ python -m PyM3G testfiles/vrally/car_subaru.m3g
+$ python -m pym3g testfiles/vrally/car_subaru.m3g
 (0) Header:
         Version: 1.0
         Has external references: False

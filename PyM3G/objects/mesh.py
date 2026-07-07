@@ -1,11 +1,11 @@
 """Mesh Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file, verify_ref
-from PyM3G.objects.node import Node
-from PyM3G.objects.vertex_buffer import VertexBuffer
-from PyM3G.objects.appearance import Appearance 
-from PyM3G.objects.triangle_strip_array import TriangleStripArray 
+from pym3g.util import obj2str, deref_from_file, verify_ref
+from pym3g.objects.node import Node
+from pym3g.objects.vertex_buffer import VertexBuffer
+from pym3g.objects.appearance import Appearance 
+from pym3g.objects.triangle_strip_array import TriangleStripArray 
 
 class Mesh(Node):
     """

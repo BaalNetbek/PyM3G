@@ -1,9 +1,9 @@
 """Transformable Class"""
 
 from struct import unpack, pack
-from PyM3G.objects.object3d import Object3D
-from PyM3G.util import obj2str
-from PyM3G.data.matrix import Matrix
+from pym3g.objects.object3d import Object3D
+from pym3g.util import obj2str
+from pym3g.data.matrix import Matrix
 
 
 class Transformable(Object3D):

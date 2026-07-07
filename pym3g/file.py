@@ -6,10 +6,10 @@ from io import BytesIO
 from struct import unpack, pack
 import logging
 
-from PyM3G.util import fishlabs_deobfuscate
-from PyM3G.data.section import Section
-from PyM3G.objects import *
-from PyM3G.objects.object import ObjectM3G
+from pym3g.util import fishlabs_deobfuscate
+from pym3g.data.section import Section
+from pym3g.objects import *
+from pym3g.objects.object import ObjectM3G
 
 _M3G_SIG = b"\xAB\x4A\x53\x52\x31\x38\x34\xBB\x0D\x0A\x1A\x0A"
 """«JSR184»"""

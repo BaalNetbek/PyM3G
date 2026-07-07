@@ -1,9 +1,9 @@
 """Light Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, const2str
-from PyM3G.data.color import Color
-from PyM3G.objects.node import Node
+from pym3g.util import obj2str, const2str
+from pym3g.data.color import Color
+from pym3g.objects.node import Node
 
 
 class Light(Node):

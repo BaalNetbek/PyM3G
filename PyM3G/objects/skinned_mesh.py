@@ -1,10 +1,10 @@
 """Skinned Mesh Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file, verify_ref
-from PyM3G.objects.mesh import Mesh
-from PyM3G.objects.group import Group
-from PyM3G.objects.transformable import Transformable
+from pym3g.util import obj2str, deref_from_file, verify_ref
+from pym3g.objects.mesh import Mesh
+from pym3g.objects.group import Group
+from pym3g.objects.transformable import Transformable
 
 class SkinnedMesh(Mesh):
     """

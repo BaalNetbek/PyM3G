@@ -1,10 +1,10 @@
 """World Class"""
 
 from struct import unpack, pack
-from PyM3G.util import obj2str, deref_from_file, verify_ref
-from PyM3G.objects.group import Group
-from PyM3G.objects.background import Background
-from PyM3G.objects.camera import Camera
+from pym3g.util import obj2str, deref_from_file, verify_ref
+from pym3g.objects.group import Group
+from pym3g.objects.background import Background
+from pym3g.objects.camera import Camera
 
 class World(Group):
     """
