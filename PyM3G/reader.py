@@ -4,12 +4,12 @@ Module for reading JSR 184 m3g files
 
 from io import BytesIO
 from struct import unpack, pack
-import zlib
 import logging
 
 from PyM3G.util import fishlabs_deobfuscate
 from PyM3G.data.section import Section
 from PyM3G.objects import *
+from PyM3G.objects.object import ObjectM3G
 
 _M3G_SIG = b"\xAB\x4A\x53\x52\x31\x38\x34\xBB\x0D\x0A\x1A\x0A"
 """«JSR184»"""
@@ -22,66 +22,43 @@ _BAD_SIG = 0
 _M3G = 1 
 _IM_M3G = 2 
 _IM2M3G = 3
-class M3GReader:
+class M3GFile:
     """
-    Reader for JSR 184 M3G data files
+    Reader, writer class for JSR 184 M3G data files
     """
-
-    _type2class = {
-        0: Header,
-        1: AnimationController,
-        2: AnimationTrack,
-        3: Appearance,
-        4: Background,
-        5: Camera,
-        6: CompositingMode,
-        7: Fog,
-        8: PolygonMode,
-        9: Group,
-        10: Image2D,
-        11: TriangleStripArray,
-        12: Light,
-        13: Material,
-        14: Mesh,
-        15: MorphingMesh,
-        16: SkinnedMesh,
-        17: Texture2D,
-        18: Sprite,
-        19: KeyframeSequence,
-        20: VertexArray,
-        21: VertexBuffer,
-        22: World,
-        100: Submesh,
-        255: ExternalReference,
-    }
-
-    _class2type = {cls: t for t, cls in _type2class.items()}
-
     def __init__(self, path="", log_level=logging.ERROR):
 
         self.log = logging.getLogger("m3g")
         self.log.setLevel(log_level)
 
-        self.objects = [] # todo make it [][] and remove sections lens
-        self.sections_lens = []
-        self.sect_cnt = 0
-        
+        self.objects = []
+        self.sections = []
+        self.file = None
+        self.version = None
+
         if path != "":
             self.read(path)
 
+    def get_object(self, obj_id):
+        """Returns an object by id"""
+        return self.objects[obj_id - 1]
+    
     def read(self, path):
-        with open(path, "rb") as file:
-            self.file = file        
-            if not self.file:
-                self.log.error("Could not open file %s", path)
-                return
-            self.version = self._verify_signature()
-            if self.version == _BAD_SIG:
-                self.log.error("Invalid M3G file %s", path)
-                return
-            self.read_sections()
+        try:
+            with open(path, "rb") as file:
+                self.file = file        
+                self.version = self._verify_signature()
+                if self.version == _BAD_SIG:
+                    self.log.error("Invalid M3G file %s", path)
+                    return [], []
+                self.read_sections()
+        except OSError as e:
+            self.log.error(str(e))
+            return [], []
 
-        self.log.info("Read sections with lenghts: "+ str([s[1]-s[0] for s in self.sections_lens]) + " - " + str(self.sections_lens[self.sect_cnt-1][1]) + " objects total.")
+        sections_lens = [*[len(s.objects) for s in self.sections]]
+        self.log.info("Read sections with lenghts: "+ str(sections_lens) + " - " + str(sum(sections_lens)) + " objects total.")
+        return self.sections, self.objects
 
     def _verify_signature(self):
         """Verify header bytes to make sure this is a valid m3g file"""
@@ -105,68 +82,11 @@ class M3GReader:
                 return _M3G
         return _BAD_SIG
 
-    def parse_object(self, objtype, data, before_objects = None, offset = None):
-        """Parse an object out of a uncompressed binary data chunk"""
-        rdr = BytesIO(data)
-        if objtype in self._type2class:
-            obj = self._type2class.get(objtype)()
-        else:
-            obj = None
-            if offset == None:
-                self.log.error("Invalid object type(%d) found", objtype)
-            else:
-                self.log.error("Invalid object type(%d) found @%s", objtype, hex(offset))
-            rdr.close()
-            return None
-        
-        if offset == None:
-            self.log.info(
-                "Found [bold cyan]%s[/] object",
-                obj.__class__.__name__, 
-                extra={"markup": True},
-            )
-        else:
-            self.log.info(
-                "Found [bold cyan]%s[/] object @%s",
-                obj.__class__.__name__, hex(offset),
-                extra={"markup": True},
-                
-            )
-
-        obj.read(rdr, before_objects)
-
-        bytes_unread = len(rdr.read())
-        if obj is None and bytes_unread > 0:
-            self.log.warning("%d bytes left unread", bytes_unread)
-        rdr.close()
-        return obj
-
-    def read_objects(self, data, offset = None):
-        """Reads all objects from a section"""
-        rdr = BytesIO(data)
-        while True:
-            if offset == None:
-                obj_off = None
-            else:
-                obj_off = offset + rdr.tell()
-            object_header = rdr.read(5)
-            if object_header == b"":
-                break
-            object_type, size = unpack("<BI", object_header)
-            if object_type == self._class2type[ExternalReference]:
-                ext_ref = self.parse_object(object_type, rdr.read(size), self.objects, obj_off)
-                self.objects.append(self.parse_external_ref(ext_ref))
-            else:
-                self.objects.append(self.parse_object(object_type, rdr.read(size), self.objects, obj_off))
-            
-        rdr.close()
-
     def read_sections(self):
         """Reads all sections from a file"""
         while True:
-            section = Section(self.log)
-
-            if section.read(self.file) == b'':
+            section = Section(logger = self.log)
+            if section.read(self.file, self.objects) == b'':
                 if self.objects[0].total_file_size == section.file_size:
                     self.log.info(
                         "File size matches size declared in [bold cyan]Header[/]",
@@ -178,45 +98,106 @@ class M3GReader:
                         hex(section.file_size), hex(self.objects[0].total_file_size), extra={"markup": True}
                     )
                 break
-            self.sections_lens.append([len(self.objects)])
+            self.sections.append(section)
 
-            if section.compression_scheme == Section.ZLIB:
-                self.read_objects(zlib.decompress(section.objects_bytes))
-            elif section.compression_scheme == Section.UNCOMPRESSED:
-                self.read_objects(section.objects_bytes, section.objects_offset)
-            else:
-                self.log.error("Unknown Compression Scheme.")
-                return            
+    def set_sections(self, sections: list[Section], compression):
+        sections = list(sections)
+        header_sect = sections[0]
+        header = header_sect.objects[0]
+        if len(header_sect.objects) != 1 or type(header) != Header:
+            raise ValueError("First section must have only Header object.")
+        if header.has_external_references and any(not isinstance(o, ExternalReference) for o in sections[1].objects):  
+            raise ValueError("External reference section doesn't exclusively containt external refs.")
+        self.objects = [o for s in sections for o in s.objects]
+        for o in self.objects:
+            o.update_ref(self.objects) 
 
-            self.sections_lens[self.sect_cnt].append(len(self.objects))
-            self.sect_cnt+=1
+        sects = []
+        size = len(_M3G_SIG)
+        with BytesIO() as temp:
+            temp.write(_M3G_SIG)
+            header_sect = sections[0]
+            sects.append(header_sect)
+            header_sect.write(temp, Section.UNCOMPRESSED)
+            size += header_sect.getSize()
+            for s in sections[1:]:
+                sects.append(s)
+                s.write(temp, compression)
+                size += s.getSize()
+            self.sections = sects
+            header.total_file_size = temp.tell()
+            header.approximate_content_size = size
+            temp.seek(len(_M3G_SIG))
+            header_sect.write(temp, update=True)
+            return temp.getvalue()
 
-    def get_object(self, obj_id):
-        """Returns an object by id"""
-        return self.objects[obj_id - 1]
+    def set_objects(self, objects: list[ObjectM3G], compression):
+        n_heads = sum(isinstance(o, Header) for o in objects)
+        n_erefs = sum(isinstance(o, ExternalReference) for o in objects)
+        n_data = len(objects) - n_heads - n_erefs
 
-    def parse_external_ref(self, ext_ref: ExternalReference) -> Image2D:
-        try:
-            from PIL import Image
-            from os import path
-            path.join(path.dirname(self.file.name), ext_ref.uri)
-            img = Image.open(path)
-            mode_map = {
-                "L": Image2D.LUMINANCE,
-                "LA": Image2D.LUMINANCE_ALPHA,
-                "RGB": Image2D.RGB,
-                "RGBA": Image2D.RGBA,
-                "A": Image2D.ALPHA,
-            }
-            if img.mode not in mode_map:
-                raise ValueError(f"Unsupported image mode: {img.mode}")
-            image2d = Image2D()
-            image2d.format = mode_map[img.mode]
-            image2d.is_mutable = False
-            image2d.width, image2d.height = img.size
-            image2d.palette = [] 
-            image2d.pixels = list(img.tobytes())
-            return image2d
-        except Exception as e:
-            self.log.error("Failed loading external image: %s" %ext_ref.uri)
-            return Image2D()
+        objects = list(objects)
+        if n_heads == 0:
+            objects = [Header()] + objects
+        elif n_heads > 1:
+            raise ValueError("Too many Header objects in the list")
+        elif not isinstance(objects[0], Header): # n_heads == 1    
+            self.log.warning("Header is not the first object in the list. Moving the Header to the begging.")
+            head_pos = next((i for i, o in enumerate(objects) if isinstance(o, Header)), None)
+            objects[0:0] = [objects.pop(head_pos)] # move it to [0]
+        header = objects[0]
+        
+        if n_erefs > 0:
+            if not all(isinstance(o, ExternalReference) for o in objects[1:1 + n_erefs]): 
+                erefs = [o for o in objects if isinstance(o, ExternalReference)]
+                data = [o for o in objects if not isinstance(o, ExternalReference)]
+                objects[:] = [header] + erefs + data
+        for o in objects:
+            o.update_ref(objects) 
+
+        sects = []
+        size = len(_M3G_SIG)
+        with BytesIO() as temp:
+            temp.write(_M3G_SIG)
+            header_sect = Section(header, Section.UNCOMPRESSED)
+            sects.append(header_sect)
+            header_sect.write(temp)
+            size += header_sect.getSize()
+            if n_erefs > 0:
+                eref_sect = Section(objects[1:1+n_erefs])
+                sects.append(eref_sect)
+                eref_sect.write(temp)
+                size += eref_sect.getSize()
+            if n_data > 0:
+                data_sect = Section(objects[1+n_erefs:])
+                data_sect.write(temp)
+                sects.append(data_sect)
+                size += data_sect.getSize()
+            self.sections = sects
+
+            header.total_file_size = temp.tell()
+            header.approximate_content_size = size
+            temp.seek(len(_M3G_SIG))
+            header_sect.write(temp, update=True)
+            return temp.getvalue()
+        
+    def write(self, path, sect_or_obj, compression = None):
+        write_bytes = b""
+        if not isinstance(sect_or_obj, list):
+            raise TypeError("Section obj must be a list")
+        if all(isinstance(o, ObjectM3G) for o in sect_or_obj):
+            objects = sect_or_obj
+            write_bytes = self.set_objects(objects, compression)
+        elif all(isinstance(s, Section) for s in sect_or_obj): 
+            sections = sect_or_obj
+            write_bytes = self.set_sections(sections, compression)
+        else:
+            raise TypeError("sect_or_obj must be list of exclusively Section or Object instances")
+            
+        with open(path, "wb") as f:
+            if write_bytes:
+                f.write(write_bytes)
+                return
+            f.write(_M3G_SIG)
+            for s in self.sections:
+                s.write(f)

@@ -2,6 +2,6 @@
 JSR 184 Python library
 """
 
-from PyM3G.reader import M3GReader
+from PyM3G.file import M3GFile
 
-__all__ = ["M3GReader"]
+__all__ = ["M3GFile"]

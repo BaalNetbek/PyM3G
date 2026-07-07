@@ -1,9 +1,9 @@
 """Object Class"""
 
 
-class Object:
+class ObjectM3G:
     """
-    Abstract parent class to all objects
+    Abstract parent class to all M3G objects
     """
 
     def __init__(self):
