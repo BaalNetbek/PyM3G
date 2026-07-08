@@ -2,9 +2,10 @@
 Module for reading JSR 184 m3g files
 """
 
-from io import BytesIO
-from struct import unpack, pack
 import logging
+from io import BytesIO, IOBase
+from os import PathLike
+
 
 from pym3g.util import fishlabs_deobfuscate
 from pym3g.data.section import Section
@@ -31,8 +32,8 @@ class M3GFile:
         self.log = logging.getLogger("m3g")
         self.log.setLevel(log_level)
 
-        self.objects = []
-        self.sections = []
+        self.objects: list[ObjectM3G] = []
+        self.sections: list[Section] = []
         self.file = None
         self.version = None
 
@@ -181,7 +182,7 @@ class M3GFile:
             header_sect.write(temp, update=True)
             return temp.getvalue()
         
-    def write(self, path, sect_or_obj, compression = None):
+    def write(self, file_or_path, sect_or_obj, compression = None):
         write_bytes = b""
         if not isinstance(sect_or_obj, list):
             raise TypeError("Section obj must be a list")
@@ -194,10 +195,14 @@ class M3GFile:
         else:
             raise TypeError("sect_or_obj must be list of exclusively Section or Object instances")
             
-        with open(path, "wb") as f:
-            if write_bytes:
-                f.write(write_bytes)
-                return
-            f.write(_M3G_SIG)
-            for s in self.sections:
-                s.write(f)
+        if not isinstance(file_or_path, IOBase):
+            f = open(file_or_path, "wb")
+        else:
+            f = file_or_path
+
+        if write_bytes:
+            f.write(write_bytes)
+            return
+        f.write(_M3G_SIG)
+        for s in self.sections:
+            s.write(f)

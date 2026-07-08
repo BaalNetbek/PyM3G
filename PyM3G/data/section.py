@@ -48,6 +48,7 @@ class Section:
 
     def __init__(self, objects: list[ObjectM3G]|ObjectM3G = None, compression = UNCOMPRESSED, logger = None):
         self.compression_scheme: int = 0 
+        self.setCompressionScheme(compression)
         self.total_section_size: int = 0
         self.uncompressed_size: int = 0
         self.objects_bytes: bytes = b''
