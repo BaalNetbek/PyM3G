@@ -17,7 +17,9 @@ try:
         handlers=[RichHandler()],
     )
     c = console.Console()
+    rich_cons = True
 except ImportError:
+    rich_cons = False
     logging.basicConfig(
         level=logging.NOTSET,
         format="%(asctime)s [%(levelname)s] %(message)s",
@@ -26,9 +28,11 @@ except ImportError:
     )
         
 m3g = M3GFile(argv[1], log_level=logging.DEBUG)
+
 for i, obj in enumerate(m3g.objects, 1):
-    if 'c' in locals():
+    if rich_cons:
         c.print("({0}) {1}".format(i, obj))
-    print("({0}) {1}".format(i, obj))
+    else:
+        print("({0}) {1}".format(i, obj))
 
 
